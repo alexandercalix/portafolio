@@ -1,0 +1,41 @@
+using Amazon.S3;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
+using otdev.Backend.Services;
+using System;
+
+var builder = FunctionsApplication.CreateBuilder(args);
+
+builder.ConfigureFunctionsWebApplication();
+
+builder.Services
+    .AddApplicationInsightsTelemetryWorkerService()
+    .ConfigureFunctionsApplicationInsights();
+
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var uri = Environment.GetEnvironmentVariable("MONGODB_URI");
+    return new MongoClient(uri);
+});
+
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var accessKey = Environment.GetEnvironmentVariable("R2_ACCESS_KEY");
+    var secretKey = Environment.GetEnvironmentVariable("R2_SECRET_KEY");
+    var endpoint = Environment.GetEnvironmentVariable("R2_ENDPOINT");
+    
+    var config = new AmazonS3Config
+    {
+        ServiceURL = endpoint,
+    };
+    return new AmazonS3Client(accessKey, secretKey, config);
+});
+
+builder.Services
+    .AddSingleton<IMongoService, MongoService>()
+    .AddSingleton<IR2Service, R2Service>();
+
+builder.Build().Run();
