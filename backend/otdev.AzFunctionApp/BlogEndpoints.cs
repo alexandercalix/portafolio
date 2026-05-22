@@ -31,7 +31,19 @@ namespace otdev.AzFunctionApp
         public async Task<HttpResponseData> GetBlogPosts([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "blogs")] HttpRequestData req)
         {
             var query = PaginationQueryRequest.FromRequest(req);
-            var result = await _mongoService.GetBlogPostsAsync(query);
+            var result = await _mongoService.GetBlogPostsAsync(query, includeDrafts: false);
+            
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(result);
+            return response;
+        }
+
+        [Function("GetAdminBlogPosts")]
+        public async Task<HttpResponseData> GetAdminBlogPosts([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "admin/blogs")] HttpRequestData req)
+        {
+            if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
+            var query = PaginationQueryRequest.FromRequest(req);
+            var result = await _mongoService.GetBlogPostsAsync(query, includeDrafts: true);
             
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(result);
@@ -41,7 +53,7 @@ namespace otdev.AzFunctionApp
         [Function("GetBlogPostBySlug")]
         public async Task<HttpResponseData> GetBlogPostBySlug([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "blogs/{slug}")] HttpRequestData req, string slug)
         {
-            var post = await _mongoService.GetBlogPostBySlugAsync(slug);
+            var post = await _mongoService.GetBlogPostBySlugAsync(slug, includeDrafts: false);
             if (post == null) return req.CreateResponse(HttpStatusCode.NotFound);
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(post);
@@ -69,7 +81,9 @@ namespace otdev.AzFunctionApp
                 Technologies = requestData.Technologies ?? new List<string>(),
                 Author = requestData.Author,
                 Slug = GenerateSlug(requestData.Title),
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsPublished = requestData.IsPublished ?? false,
+                PublishedAt = (requestData.IsPublished == true) ? DateTime.UtcNow : null
             };
 
             // Process image uploads concurrently if any files are attached.
@@ -142,6 +156,12 @@ namespace otdev.AzFunctionApp
             post.Author = requestData.Author;
             post.Slug = GenerateSlug(requestData.Title);
             post.UpdatedAt = DateTime.UtcNow;
+
+            if (requestData.IsPublished == true && !post.IsPublished)
+            {
+                post.PublishedAt = DateTime.UtcNow;
+            }
+            post.IsPublished = requestData.IsPublished ?? false;
 
             // Process image uploads concurrently if any files are attached.
             var uploadedImageUrls = new List<string>();

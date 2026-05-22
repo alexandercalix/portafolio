@@ -32,7 +32,19 @@ namespace otdev.AzFunctionApp
         public async Task<HttpResponseData> GetProjects([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "projects")] HttpRequestData req)
         {
             var query = PaginationQueryRequest.FromRequest(req);
-            var result = await _mongoService.GetProjectsAsync(query);
+            var result = await _mongoService.GetProjectsAsync(query, includeDrafts: false);
+            
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(result);
+            return response;
+        }
+
+        [Function("GetAdminProjects")]
+        public async Task<HttpResponseData> GetAdminProjects([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "admin/projects")] HttpRequestData req)
+        {
+            if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
+            var query = PaginationQueryRequest.FromRequest(req);
+            var result = await _mongoService.GetProjectsAsync(query, includeDrafts: true);
             
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(result);
@@ -42,7 +54,7 @@ namespace otdev.AzFunctionApp
         [Function("GetProjectBySlug")]
         public async Task<HttpResponseData> GetProjectBySlug([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "projects/{slug}")] HttpRequestData req, string slug)
         {
-            var project = await _mongoService.GetProjectBySlugAsync(slug);
+            var project = await _mongoService.GetProjectBySlugAsync(slug, includeDrafts: false);
             if (project == null) return req.CreateResponse(HttpStatusCode.NotFound);
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(project);
@@ -70,7 +82,9 @@ namespace otdev.AzFunctionApp
                 Author = requestData.Author,
                 Slug = GenerateSlug(requestData.Title),
                 CreatedAt = DateTime.UtcNow,
-                Images = new List<string>()
+                Images = new List<string>(),
+                IsPublished = requestData.IsPublished ?? false,
+                PublishedAt = (requestData.IsPublished == true) ? DateTime.UtcNow : null
             };
 
             // Process image uploads concurrently if any files are attached.
@@ -140,6 +154,12 @@ namespace otdev.AzFunctionApp
             project.Slug = GenerateSlug(requestData.Title);
             project.UpdatedAt = DateTime.UtcNow;
             project.Images ??= new List<string>();
+
+            if (requestData.IsPublished == true && !project.IsPublished)
+            {
+                project.PublishedAt = DateTime.UtcNow;
+            }
+            project.IsPublished = requestData.IsPublished ?? false;
 
             // Process image uploads concurrently if any files are attached.
             if (parsedForm.Files.Any())

@@ -11,5 +11,6 @@ namespace otdev.Backend.Models
         public string? GithubUrl { get; set; }
         public List<string> Technologies { get; set; } = new();
         public AuthorProfile? Author { get; set; }
+        public bool? IsPublished { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using otdev.Backend.Models;
 using System;
@@ -14,6 +15,7 @@ namespace otdev.Backend.Services
     {
         private readonly IMongoCollection<BlogPost> _blogCollection;
         private readonly IMongoCollection<PortfolioProject> _projectCollection;
+        private readonly IMongoCollection<SiteProfile> _profileCollection;
 
         public MongoService(IMongoClient mongoClient)
         {
@@ -22,9 +24,10 @@ namespace otdev.Backend.Services
             var database = mongoClient.GetDatabase(databaseName);
             _blogCollection = database.GetCollection<BlogPost>("BlogPosts");
             _projectCollection = database.GetCollection<PortfolioProject>("PortfolioDB");
+            _profileCollection = database.GetCollection<SiteProfile>("SiteProfile");
         }
 
-        public async Task<PagedResult<BlogPost>> GetBlogPostsAsync(PaginationQueryRequest query)
+        public async Task<PagedResult<BlogPost>> GetBlogPostsAsync(PaginationQueryRequest query, bool includeDrafts = false)
         {
             var builder = Builders<BlogPost>.Filter;
             var filter = builder.Empty;
@@ -45,6 +48,11 @@ namespace otdev.Backend.Services
                 filter &= builder.Lte(x => x.CreatedAt, query.EndDate.Value);
             }
 
+            if (!includeDrafts)
+            {
+                filter &= builder.Eq(x => x.IsPublished, true);
+            }
+
             var totalRecords = await _blogCollection.CountDocumentsAsync(filter);
             var totalPages = (int)Math.Ceiling((double)totalRecords / query.PageSize);
 
@@ -63,8 +71,15 @@ namespace otdev.Backend.Services
             };
         }
 
-        public async Task<BlogPost?> GetBlogPostBySlugAsync(string slug) =>
-            await _blogCollection.Find(x => x.Slug == slug).FirstOrDefaultAsync();
+        public async Task<BlogPost?> GetBlogPostBySlugAsync(string slug, bool includeDrafts = false)
+        {
+            var filter = Builders<BlogPost>.Filter.Eq(x => x.Slug, slug);
+            if (!includeDrafts)
+            {
+                filter &= Builders<BlogPost>.Filter.Eq(x => x.IsPublished, true);
+            }
+            return await _blogCollection.Find(filter).FirstOrDefaultAsync();
+        }
 
         public async Task<BlogPost?> GetBlogPostByIdAsync(string id) =>
             await _blogCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
@@ -78,7 +93,7 @@ namespace otdev.Backend.Services
         public async Task DeleteBlogPostAsync(string id) =>
             await _blogCollection.DeleteOneAsync(x => x.Id == id);
 
-        public async Task<PagedResult<PortfolioProject>> GetProjectsAsync(PaginationQueryRequest query)
+        public async Task<PagedResult<PortfolioProject>> GetProjectsAsync(PaginationQueryRequest query, bool includeDrafts = false)
         {
             var builder = Builders<PortfolioProject>.Filter;
             var filter = builder.Empty;
@@ -99,6 +114,11 @@ namespace otdev.Backend.Services
                 filter &= builder.Lte(x => x.CreatedAt, query.EndDate.Value);
             }
 
+            if (!includeDrafts)
+            {
+                filter &= builder.Eq(x => x.IsPublished, true);
+            }
+
             var totalRecords = await _projectCollection.CountDocumentsAsync(filter);
             var totalPages = (int)Math.Ceiling((double)totalRecords / query.PageSize);
 
@@ -117,8 +137,15 @@ namespace otdev.Backend.Services
             };
         }
 
-        public async Task<PortfolioProject?> GetProjectBySlugAsync(string slug) =>
-            await _projectCollection.Find(x => x.Slug == slug).FirstOrDefaultAsync();
+        public async Task<PortfolioProject?> GetProjectBySlugAsync(string slug, bool includeDrafts = false)
+        {
+            var filter = Builders<PortfolioProject>.Filter.Eq(x => x.Slug, slug);
+            if (!includeDrafts)
+            {
+                filter &= Builders<PortfolioProject>.Filter.Eq(x => x.IsPublished, true);
+            }
+            return await _projectCollection.Find(filter).FirstOrDefaultAsync();
+        }
 
         public async Task<PortfolioProject?> GetProjectByIdAsync(string id) =>
             await _projectCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
@@ -131,5 +158,24 @@ namespace otdev.Backend.Services
 
         public async Task DeleteProjectAsync(string id) =>
             await _projectCollection.DeleteOneAsync(x => x.Id == id);
+
+        public async Task<SiteProfile?> GetProfileAsync() =>
+            await _profileCollection.Find(Builders<SiteProfile>.Filter.Empty).FirstOrDefaultAsync();
+
+        public async Task UpsertProfileAsync(SiteProfile profile)
+        {
+            var existingProfile = await GetProfileAsync();
+            if (existingProfile != null)
+            {
+                profile.Id = existingProfile.Id;
+            }
+            else if (string.IsNullOrEmpty(profile.Id))
+            {
+                profile.Id = ObjectId.GenerateNewId().ToString();
+            }
+
+            var filter = Builders<SiteProfile>.Filter.Eq(x => x.Id, profile.Id);
+            await _profileCollection.ReplaceOneAsync(filter, profile, new ReplaceOptions { IsUpsert = true });
+        }
     }
 }

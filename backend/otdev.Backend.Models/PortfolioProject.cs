@@ -51,5 +51,11 @@ namespace otdev.Backend.Models
 
         [BsonElement("excerpt")]
         public string? Excerpt { get; set; }
+
+        [BsonElement("isPublished")]
+        public bool IsPublished { get; set; } = false;
+
+        [BsonElement("publishedAt")]
+        public System.DateTime? PublishedAt { get; set; }
     }
 }

@@ -43,5 +43,11 @@ namespace otdev.Backend.Models
 
         [BsonElement("thumbnailUrl")]
         public string? ThumbnailUrl { get; set; }
+
+        [BsonElement("isPublished")]
+        public bool IsPublished { get; set; } = false;
+
+        [BsonElement("publishedAt")]
+        public DateTime? PublishedAt { get; set; }
     }
 }
