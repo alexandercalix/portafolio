@@ -39,7 +39,7 @@ namespace otdev.AzFunctionApp
         }
 
         [Function("GetAdminBlogPosts")]
-        public async Task<HttpResponseData> GetAdminBlogPosts([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "admin/blogs")] HttpRequestData req)
+        public async Task<HttpResponseData> GetAdminBlogPosts([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cms/blogs")] HttpRequestData req)
         {
             if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
             var query = PaginationQueryRequest.FromRequest(req);
@@ -58,6 +58,23 @@ namespace otdev.AzFunctionApp
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(post);
             return response;
+        }
+
+        [Function("GetBlogPostById")]
+        public async Task<HttpResponseData> GetBlogPostById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cms/blogs/{id}")] HttpRequestData req, string id)
+        {
+            try {
+                if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
+                var post = await _mongoService.GetBlogPostByIdAsync(id);
+                if (post == null) return req.CreateResponse(HttpStatusCode.NotFound);
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await response.WriteAsJsonAsync(post);
+                return response;
+            } catch (Exception ex) {
+                var response = req.CreateResponse(HttpStatusCode.InternalServerError);
+                await response.WriteStringAsync(ex.ToString());
+                return response;
+            }
         }
 
         [Function("CreateBlogPost")]

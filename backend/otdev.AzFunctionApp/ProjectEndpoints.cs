@@ -40,7 +40,7 @@ namespace otdev.AzFunctionApp
         }
 
         [Function("GetAdminProjects")]
-        public async Task<HttpResponseData> GetAdminProjects([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "admin/projects")] HttpRequestData req)
+        public async Task<HttpResponseData> GetAdminProjects([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cms/projects")] HttpRequestData req)
         {
             if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
             var query = PaginationQueryRequest.FromRequest(req);
@@ -59,6 +59,23 @@ namespace otdev.AzFunctionApp
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(project);
             return response;
+        }
+
+        [Function("GetProjectById")]
+        public async Task<HttpResponseData> GetProjectById([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "cms/projects/{id}")] HttpRequestData req, string id)
+        {
+            try {
+                if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
+                var project = await _mongoService.GetProjectByIdAsync(id);
+                if (project == null) return req.CreateResponse(HttpStatusCode.NotFound);
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                await response.WriteAsJsonAsync(project);
+                return response;
+            } catch (Exception ex) {
+                var response = req.CreateResponse(HttpStatusCode.InternalServerError);
+                await response.WriteStringAsync(ex.ToString());
+                return response;
+            }
         }
 
         [Function("CreateProject")]
@@ -142,7 +159,7 @@ namespace otdev.AzFunctionApp
 
             if (requestData == null || string.IsNullOrWhiteSpace(requestData.Title)) return req.CreateResponse(HttpStatusCode.BadRequest);
 
-            var project = await _mongoService.GetProjectByIdAsync(id);
+            try { var project = await _mongoService.GetProjectByIdAsync(id); if (project == null) return req.CreateResponse(HttpStatusCode.NotFound); var response = req.CreateResponse(HttpStatusCode.OK); await response.WriteAsJsonAsync(project); return response; } catch (Exception ex) { var err = req.CreateResponse(HttpStatusCode.InternalServerError); await err.WriteStringAsync(ex.ToString()); return err; }
             if (project == null) return req.CreateResponse(HttpStatusCode.NotFound);
 
             project.Title = requestData.Title;

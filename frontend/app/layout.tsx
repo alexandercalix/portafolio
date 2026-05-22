@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from '@next/third-parties/google';
+import { Suspense } from 'react';
+import TelemetryHandler from './TelemetryHandler';
+import { ThemeProvider } from '@/src/components/ThemeProvider';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,8 +30,21 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+        >
+          {children}
+          <Suspense fallback={null}>
+            <TelemetryHandler />
+          </Suspense>
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID as string} />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
