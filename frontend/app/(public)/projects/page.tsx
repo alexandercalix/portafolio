@@ -1,6 +1,7 @@
 import { getProjects } from "@/src/lib/api"
 import Link from "next/link"
 import { FolderGit2 } from "lucide-react"
+import { generateCleanExcerpt } from "@/src/utils/markdownUtils"
 
 export const revalidate = 60
 
@@ -45,6 +46,10 @@ export default async function PublicProjectsPage() {
               <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-[var(--color-terminal-green)] transition-colors line-clamp-2">
                 {project.title}
               </h2>
+              
+              <p className="mt-2 text-neutral-600 dark:text-neutral-400 font-sans text-sm line-clamp-2">
+                {generateCleanExcerpt(project.excerpt || project.description || '', 150)}
+              </p>
               
               <div className="mt-4 flex flex-wrap gap-2">
                 {project.technologies?.slice(0, 4).map((tech, idx) => (

@@ -1,6 +1,7 @@
 import { getBlogPosts } from "@/src/lib/api"
 import Link from "next/link"
 import { format } from "date-fns"
+import { generateCleanExcerpt } from "@/src/utils/markdownUtils"
 
 export const revalidate = 60
 
@@ -54,9 +55,9 @@ export default async function PublicBlogPage() {
                   {post.title}
                 </h2>
                 
-                {/* Simplified excerpt approach (grabbing first 150 chars of markdown) */}
+                {/* Cleaned markdown excerpt */}
                 <p className="text-neutral-600 dark:text-neutral-400 font-sans text-sm md:text-base line-clamp-3">
-                  {post.content.replace(/[#*`>]/g, '').substring(0, 200)}...
+                  {generateCleanExcerpt(post.excerpt || post.content, 200)}
                 </p>
 
                 <div className="font-mono text-xs text-[var(--color-terminal-green)] flex items-center gap-2 pt-2">

@@ -48,6 +48,7 @@ builder.Services
     .AddSingleton<IContactMessageService, ContactMessageService>()
     .AddSingleton<IMediaService, MediaService>()
     .AddSingleton<IR2Service, R2Service>()
-    .AddSingleton<ITemplateService, TemplateService>();
+    .AddSingleton<ITemplateService, TemplateService>()
+    .AddSingleton<ISettingsService, SettingsService>();
 
 builder.Build().Run();

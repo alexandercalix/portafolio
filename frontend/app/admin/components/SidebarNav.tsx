@@ -14,7 +14,8 @@ export default function SidebarNav() {
     { name: 'Projects', href: '/admin/projects', icon: Briefcase },
     { name: 'Blog', href: '/admin/blog', icon: FileText },
     { name: 'Messages', href: '/admin/messages', icon: MessageSquare },
-    { name: 'Settings', href: '/admin/settings/email', icon: Settings },
+    { name: 'Brand Identity', href: '/admin/settings/brand', icon: Settings },
+    { name: 'Email Settings', href: '/admin/settings/email', icon: Settings },
   ]
 
   return (

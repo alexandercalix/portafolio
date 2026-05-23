@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getGlobalProfile } from "@/src/lib/api";
+import { getGlobalProfile, getSiteSettings } from "@/src/lib/api";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Suspense } from 'react';
 import TelemetryHandler from './TelemetryHandler';
@@ -18,11 +18,17 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await getGlobalProfile().catch(() => null);
+  const [profile, settings] = await Promise.all([
+    getGlobalProfile().catch(() => null),
+    getSiteSettings().catch(() => null)
+  ]);
   
   return {
-    title: profile?.name ? `${profile.name} | Portafolio` : "Portafolio",
+    title: profile?.name ? `${profile.name} | ${settings?.siteName || "Portafolio"}` : settings?.siteName || "Portafolio",
     description: profile?.headline || "System Architecture and Portfolio",
+    icons: {
+      icon: settings?.faviconUrl || '/favicon.ico',
+    }
   };
 }
 
