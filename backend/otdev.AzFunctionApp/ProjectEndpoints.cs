@@ -101,12 +101,13 @@ namespace otdev.AzFunctionApp
                 LiveUrl = requestData.Url,
                 RepositoryUrl = requestData.GithubUrl,
                 Technologies = requestData.Technologies ?? new List<string>(),
+                Tags = requestData.Tags ?? new List<string>(),
                 Author = requestData.Author,
                 Slug = GenerateSlug(requestData.Title),
                 CreatedAt = DateTime.UtcNow,
                 Images = new List<string>(),
                 IsPublished = requestData.IsPublished ?? false,
-                PublishedAt = (requestData.IsPublished == true) ? DateTime.UtcNow : null
+                PublishedAt = requestData.PublishedAt ?? ((requestData.IsPublished == true) ? DateTime.UtcNow : null)
             };
 
             // Process image uploads concurrently if any files are attached.
@@ -182,16 +183,26 @@ namespace otdev.AzFunctionApp
             project.LiveUrl = requestData.Url;
             project.RepositoryUrl = requestData.GithubUrl;
             project.Technologies = requestData.Technologies ?? new List<string>();
+            project.Tags = requestData.Tags ?? new List<string>();
             project.Author = requestData.Author;
             project.Slug = GenerateSlug(requestData.Title);
             project.UpdatedAt = DateTime.UtcNow;
             project.Images ??= new List<string>();
 
-            if (requestData.IsPublished == true && !project.IsPublished)
+            if (requestData.PublishedAt.HasValue)
+            {
+                project.PublishedAt = requestData.PublishedAt;
+            }
+            else if (requestData.IsPublished == true && !project.IsPublished)
             {
                 project.PublishedAt = DateTime.UtcNow;
             }
-            project.IsPublished = requestData.IsPublished ?? false;
+            else if (requestData.IsPublished == false)
+            {
+                project.PublishedAt = null;
+            }
+
+            project.IsPublished = requestData.IsPublished ?? project.IsPublished;
 
             // Process image uploads concurrently if any files are attached.
             if (parsedForm.Files.Any())

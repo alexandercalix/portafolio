@@ -10,6 +10,8 @@ export interface SiteProfile {
     name: string;
     headline: string;
     bio: string;
+    currentFocus: string;
+    systemCapabilities: string[];
     avatarUrl?: string;
     resumeUrl?: string;
     githubUrl?: string;
@@ -21,6 +23,7 @@ export interface SiteProfile {
 
 export interface Experience {
     id: string;
+    sortOrder: number;
     jobTitle: string;
     company: string;
     startDate: string;
@@ -32,10 +35,12 @@ export interface Experience {
 
 export interface Education {
     id: string;
+    sortOrder: number;
     degreeOrCertificate: string;
     institution: string;
     dateObtained: string;
     description: string;
+    focusLine: string;
 }
 
 export interface ContactMessage {
@@ -59,6 +64,7 @@ export interface Project {
     images: string[];
     thumbnailUrl?: string;
     technologies: string[];
+    tags: string[];
     author?: {
         name: string;
         avatarUrl?: string;

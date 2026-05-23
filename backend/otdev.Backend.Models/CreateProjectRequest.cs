@@ -10,7 +10,9 @@ namespace otdev.Backend.Models
         public string? Url { get; set; }
         public string? GithubUrl { get; set; }
         public List<string> Technologies { get; set; } = new();
+        public List<string>? Tags { get; set; }
         public AuthorProfile? Author { get; set; }
         public bool? IsPublished { get; set; }
+        public System.DateTime? PublishedAt { get; set; }
     }
 }

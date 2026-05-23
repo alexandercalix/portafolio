@@ -19,6 +19,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
     async jwt({ token, account }) {
       // Extract the ACCESS TOKEN when the user logs in

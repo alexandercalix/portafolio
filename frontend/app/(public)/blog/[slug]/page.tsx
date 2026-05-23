@@ -57,7 +57,7 @@ export default async function BlogPostDetailPage({ params }: { params: Promise<{
       )}
 
       {/* Markdown Content */}
-      <div className="prose dark:prose-invert prose-neutral max-w-none prose-pre:bg-[#111315] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded-none prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-headings:font-bold prose-headings:tracking-tight prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800">
+      <div className="prose dark:prose-invert prose-neutral max-w-none prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1">
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]} 
           rehypePlugins={[rehypeHighlight]}

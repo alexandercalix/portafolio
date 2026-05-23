@@ -33,12 +33,15 @@ export default function EditProjectEditor({ params }: { params: Promise<{ id: st
     setLogMessages(prev => [...prev, { type, text }])
   }
 
+  const hasLoadedRef = useRef(false)
+
   useEffect(() => {
     async function loadProject() {
       // @ts-expect-error Custom accessToken
       const token = session?.accessToken as string
-      if (!token) return
+      if (!token || hasLoadedRef.current) return
 
+      hasLoadedRef.current = true
       try {
         const project = await getProjectById(projectId, token)
         if (project) {

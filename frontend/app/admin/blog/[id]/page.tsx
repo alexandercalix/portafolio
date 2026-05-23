@@ -31,12 +31,15 @@ export default function EditBlogPostEditor({ params }: { params: Promise<{ id: s
     setLogMessages(prev => [...prev, { type, text }])
   }
 
+  const hasLoadedRef = useRef(false)
+
   useEffect(() => {
     async function loadPost() {
       // @ts-expect-error Custom accessToken
       const token = session?.accessToken as string
-      if (!token) return
+      if (!token || hasLoadedRef.current) return
 
+      hasLoadedRef.current = true
       try {
         const post = await getBlogPostById(postId, token)
         if (post) {

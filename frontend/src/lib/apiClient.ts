@@ -17,7 +17,8 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): 
     const response = await fetch(url, {
         ...options,
         headers,
-    });
+        next: { revalidate: options.next?.revalidate ?? 0 }, // Prevent aggressive Next.js caching by default
+    } as RequestInit & { next?: { revalidate?: number | false, tags?: string[] } });
 
     if (!response.ok) {
         if (response.status === 404) {

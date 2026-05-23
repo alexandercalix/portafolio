@@ -8,6 +8,9 @@ namespace otdev.Backend.Models
         [BsonElement("id")]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
+        [BsonElement("sortOrder")]
+        public int SortOrder { get; set; } = 0;
+
         [BsonElement("degreeOrCertificate")]
         public string DegreeOrCertificate { get; set; } = string.Empty;
 
@@ -19,5 +22,8 @@ namespace otdev.Backend.Models
 
         [BsonElement("description")]
         public string Description { get; set; } = string.Empty;
+
+        [BsonElement("focusLine")]
+        public string FocusLine { get; set; } = string.Empty;
     }
 }

@@ -21,8 +21,8 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
   // Group experiences by Company
   const groupedExperiences: GroupedExperience[] = []
   
-  // Sort experiences descending by StartDate before grouping
-  const sortedExperiences = [...experiences].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+  // Sort experiences ascending by sortOrder before grouping
+  const sortedExperiences = [...experiences].sort((a, b) => a.sortOrder - b.sortOrder)
 
   sortedExperiences.forEach(exp => {
     const existingGroup = groupedExperiences.find(g => g.company === exp.company)
@@ -33,7 +33,7 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
     }
   })
 
-  const sortedEducations = [...educations].sort((a, b) => new Date(b.dateObtained).getTime() - new Date(a.dateObtained).getTime())
+  const sortedEducations = [...educations].sort((a, b) => a.sortOrder - b.sortOrder)
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-16">
@@ -114,7 +114,7 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
         <section>
           <h2 className="text-xl font-bold font-mono tracking-widest text-neutral-900 dark:text-neutral-100 mb-8 uppercase flex items-center gap-4">
             <span className="text-[var(--color-terminal-green)]">/</span>
-            CERTIFICATIONS_LOG
+            CREDENTIALS_LOG
           </h2>
           <div className="relative border-l border-neutral-300 dark:border-neutral-800 ml-4 md:ml-6 space-y-8 pb-8">
             
@@ -130,6 +130,13 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
                     </span>
                   </div>
                   <p className="font-mono text-[var(--color-terminal-green)] text-sm mb-3">{edu.institution}</p>
+                  
+                  {edu.focusLine && (
+                    <p className="font-mono text-xs text-neutral-500 mb-4">
+                      {edu.focusLine}
+                    </p>
+                  )}
+
                   {edu.description && (
                     <p className="text-sm text-neutral-600 dark:text-neutral-400">
                       {edu.description}

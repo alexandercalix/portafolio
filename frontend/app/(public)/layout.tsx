@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ThemeToggle } from "@/src/components/ThemeToggle"
+import PublicHeader from "@/src/components/PublicHeader"
 
 export default function PublicLayout({
   children,
@@ -11,25 +11,7 @@ export default function PublicLayout({
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)]">
       {/* Public Navbar */}
-      <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#111315]/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-mono font-bold tracking-tighter text-neutral-900 dark:text-neutral-100 hover:text-[var(--color-terminal-green)] transition-colors">
-            otdev<span className="text-[var(--color-terminal-green)]">.io</span>
-          </Link>
-          <nav className="flex items-center gap-8">
-            <Link href="/projects" className="text-sm font-mono text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:text-neutral-100 transition-colors">
-              /projects
-            </Link>
-            <Link href="/blog" className="text-sm font-mono text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:text-neutral-100 transition-colors">
-              /blog
-            </Link>
-            <Link href="/contact" className="text-sm font-mono text-[var(--color-terminal-green)] hover:text-green-400 transition-colors">
-              /contact
-            </Link>
-            <ThemeToggle />
-          </nav>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Main Content */}
       <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-12">

@@ -1,11 +1,31 @@
 import { auth } from "@/auth"
 import { Activity, FolderGit2, BookOpen } from "lucide-react"
-import { getGlobalProfile } from "@/src/lib/api"
+import { getGlobalProfile, getProjects, getBlogPosts } from "@/src/lib/api"
 
 export default async function DashboardPage() {
   const session = await auth()
-  const profile = await getGlobalProfile()
+  
+  const [profile, projectsResult, blogsResult] = await Promise.all([
+    getGlobalProfile().catch(() => null),
+    // @ts-expect-error - Custom accessToken is on session
+    getProjects(1, 1000, session?.accessToken as string, true).catch(() => ({ data: [] })),
+    // @ts-expect-error - Custom accessToken is on session
+    getBlogPosts(1, 1000, session?.accessToken as string, true).catch(() => ({ data: [] }))
+  ])
+  
   const userName = profile?.name || session?.user?.name || "Administrator"
+
+  const projects = projectsResult?.data || []
+  const blogs = blogsResult?.data || []
+
+  const totalProjects = projects.length
+  const publishedProjects = projects.filter(p => p.isPublished).length
+  
+  const totalBlogs = blogs.length
+  const publishedBlogs = blogs.filter(b => b.isPublished).length
+  
+  const pendingDrafts = (totalProjects - publishedProjects) + (totalBlogs - publishedBlogs)
+
 
   return (
     <div className="space-y-8">
@@ -28,10 +48,10 @@ export default async function DashboardPage() {
             <FolderGit2 className="w-16 h-16" />
           </div>
           <p className="font-mono text-sm text-neutral-500 mb-2">TOTAL_PROJECTS</p>
-          <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">12</p>
+          <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">{totalProjects}</p>
           <div className="mt-4 flex items-center gap-2">
             <span className="flex w-2 h-2 rounded-full bg-[var(--color-terminal-green)] animate-pulse"></span>
-            <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400">8 PUBLISHED</span>
+            <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400">{publishedProjects} PUBLISHED</span>
           </div>
         </div>
 
@@ -41,10 +61,10 @@ export default async function DashboardPage() {
             <BookOpen className="w-16 h-16" />
           </div>
           <p className="font-mono text-sm text-neutral-500 mb-2">BLOG_ENTRIES</p>
-          <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">4</p>
+          <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">{totalBlogs}</p>
           <div className="mt-4 flex items-center gap-2">
             <span className="flex w-2 h-2 rounded-full bg-[var(--color-terminal-green)] animate-pulse"></span>
-            <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400">ALL PUBLISHED</span>
+            <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400">{publishedBlogs === totalBlogs && totalBlogs > 0 ? 'ALL PUBLISHED' : `${publishedBlogs} PUBLISHED`}</span>
           </div>
         </div>
 
@@ -54,9 +74,9 @@ export default async function DashboardPage() {
             <Activity className="w-16 h-16" />
           </div>
           <p className="font-mono text-sm text-[var(--color-warning-amber)] mb-2">PENDING_DRAFTS</p>
-          <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">3</p>
+          <p className="text-4xl font-bold text-neutral-900 dark:text-neutral-100">{pendingDrafts}</p>
           <div className="mt-4 font-mono text-xs text-neutral-600 dark:text-neutral-400">
-            ACTION REQUIRED
+            {pendingDrafts > 0 ? 'ACTION REQUIRED' : 'ALL CLEAR'}
           </div>
         </div>
 

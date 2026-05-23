@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, UserCircle, Briefcase, FileText, LogOut, MessageSquare, Settings } from 'lucide-react'
+import { LayoutDashboard, UserCircle, Briefcase, FileText, LogOut, MessageSquare, Settings, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
@@ -39,7 +39,15 @@ export default function SidebarNav() {
         )
       })}
 
-      <div className="pt-8 mt-8 border-t border-neutral-200 dark:border-neutral-800">
+      <div className="pt-8 mt-8 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
+        <Link
+          href="/"
+          target="_blank"
+          className="flex w-full items-center gap-3 px-4 py-3 rounded-md transition-colors text-neutral-600 dark:text-neutral-400 hover:text-[var(--color-terminal-green)] hover:bg-neutral-200 dark:bg-neutral-800/50"
+        >
+          <Globe className="w-5 h-5" />
+          <span className="font-mono text-sm tracking-wide">View Public Site</span>
+        </Link>
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
           className="flex w-full items-center gap-3 px-4 py-3 rounded-md transition-colors text-neutral-600 dark:text-neutral-400 hover:text-[var(--color-warning-amber)] hover:bg-neutral-200 dark:bg-neutral-800/50"

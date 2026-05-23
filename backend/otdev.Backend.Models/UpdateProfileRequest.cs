@@ -7,6 +7,8 @@ namespace otdev.Backend.Models
         public string Name { get; set; } = string.Empty;
         public string Headline { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;
+        public string CurrentFocus { get; set; } = string.Empty;
+        public List<string> SystemCapabilities { get; set; } = new List<string>();
         public string? GithubUrl { get; set; }
         public string? LinkedInUrl { get; set; }
         public List<Experience> Experiences { get; set; } = new List<Experience>();

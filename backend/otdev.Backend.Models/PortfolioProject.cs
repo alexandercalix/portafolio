@@ -37,6 +37,9 @@ namespace otdev.Backend.Models
         [BsonElement("technologies")]
         public List<string> Technologies { get; set; } = new();
 
+        [BsonElement("tags")]
+        public List<string> Tags { get; set; } = new();
+
         [BsonElement("author")]
         public AuthorProfile? Author { get; set; }
 

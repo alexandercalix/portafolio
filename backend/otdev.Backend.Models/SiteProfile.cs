@@ -20,6 +20,12 @@ namespace otdev.Backend.Models
         [BsonElement("bio")]
         public string Bio { get; set; } = string.Empty;
 
+        [BsonElement("currentFocus")]
+        public string CurrentFocus { get; set; } = string.Empty;
+
+        [BsonElement("systemCapabilities")]
+        public List<string> SystemCapabilities { get; set; } = new List<string>();
+
         [BsonElement("avatarUrl")]
         public string? AvatarUrl { get; set; }
 

@@ -9,6 +9,9 @@ namespace otdev.Backend.Models
         [BsonElement("id")]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
+        [BsonElement("sortOrder")]
+        public int SortOrder { get; set; } = 0;
+
         [BsonElement("jobTitle")]
         public string JobTitle { get; set; } = string.Empty;
 

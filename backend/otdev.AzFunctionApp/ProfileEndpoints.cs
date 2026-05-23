@@ -29,13 +29,20 @@ namespace otdev.AzFunctionApp
         {
             var profile = await _mongoService.GetProfileAsync();
             var response = req.CreateResponse(profile == null ? HttpStatusCode.NotFound : HttpStatusCode.OK);
-            if (profile != null) await response.WriteAsJsonAsync(profile);
+            if (profile != null)
+            {
+                profile.Experiences = profile.Experiences.OrderBy(x => x.SortOrder).ToList();
+                profile.Educations = profile.Educations.OrderBy(x => x.SortOrder).ToList();
+                await response.WriteAsJsonAsync(profile);
+            }
             return response;
         }
 
         [Function("UpdateProfile")]
-        public async Task<HttpResponseData> UpdateProfile([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "profile")] HttpRequestData req)
+        public async Task<HttpResponseData> UpdateProfile([HttpTrigger(AuthorizationLevel.Anonymous, "put", "options", Route = "profile")] HttpRequestData req)
         {
+            if (req.Method.ToLower() == "options") return req.CreateResponse(HttpStatusCode.NoContent);
+
             if (!await JwtAuthValidator.ValidateRequestAsync(req)) return req.CreateResponse(HttpStatusCode.Unauthorized);
 
             var parsedForm = await MultipartFormDataParser.ParseAsync(req.Body);
@@ -49,6 +56,8 @@ namespace otdev.AzFunctionApp
             profile.Name = requestData.Name;
             profile.Headline = requestData.Headline;
             profile.Bio = requestData.Bio;
+            profile.CurrentFocus = requestData.CurrentFocus;
+            profile.SystemCapabilities = requestData.SystemCapabilities;
             profile.GithubUrl = requestData.GithubUrl;
             profile.LinkedInUrl = requestData.LinkedInUrl;
             profile.Experiences = requestData.Experiences;

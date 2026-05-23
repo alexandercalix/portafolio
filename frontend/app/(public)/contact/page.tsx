@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { trackEvent } from '@/src/utils/analytics'
 
 export default function ContactPage() {
   const [name, setName] = useState('')
@@ -8,17 +9,15 @@ export default function ContactPage() {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [successMessage, setSuccessMessage] = useState('')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     // Clear previous status
-    setSuccessMessage('')
     setErrorMessage('')
-    setIsSubmitting(true)
+    setStatus('sending')
 
     const payload = {
       Name: name,
@@ -43,7 +42,8 @@ export default function ContactPage() {
       }
 
       // Success
-      setSuccessMessage('[SYS.MSG] Transmission received. A system administrator will establish contact shortly.')
+      setStatus('success')
+      trackEvent({ action: 'contact_form_submitted', category: 'Conversion' })
       setName('')
       setEmail('')
       setSubject('')
@@ -51,9 +51,8 @@ export default function ContactPage() {
 
     } catch (err) {
       console.error('Contact form transmission failed:', err)
-      setErrorMessage('[ERR.CRITICAL] Transmission failed. Destination unreachable.')
-    } finally {
-      setIsSubmitting(false)
+      setErrorMessage(err instanceof Error ? err.message : 'Unknown error')
+      setStatus('error')
     }
   }
 
@@ -72,74 +71,88 @@ export default function ContactPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         
         {/* Error / Success Banners */}
-        {errorMessage && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-600 dark:text-red-400 font-mono text-sm p-4 uppercase">
-            {errorMessage}
+        {status === 'sending' && (
+          <div className="bg-[var(--color-warning-amber)]/10 border border-[var(--color-warning-amber)]/50 text-[var(--color-warning-amber)] font-mono text-sm p-4 uppercase">
+            <div>&gt; TRANSMISSION_STATUS: SENDING...</div>
           </div>
         )}
-        
-        {successMessage && (
+
+        {status === 'success' && (
           <div className="bg-[var(--color-terminal-green)]/10 border border-[var(--color-terminal-green)]/50 text-[var(--color-terminal-green)] font-mono text-sm p-4 uppercase">
-            {successMessage}
+            <div>&gt; TRANSMISSION_STATUS: SUCCESS</div>
+            <div>&gt; MESSAGE_RECEIVED</div>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div className="bg-red-500/10 border border-red-500/50 text-red-600 dark:text-red-400 font-mono text-sm p-4 uppercase">
+            <div>&gt; ERROR: TRANSMISSION_FAILED</div>
+            <div>&gt; RETRY_PROTOCOL_AVAILABLE</div>
           </div>
         )}
 
         <div className="space-y-2">
-          <label className="block font-mono text-xs text-neutral-500 uppercase">
+          <label htmlFor="name-input" className="block font-mono text-xs text-neutral-500 uppercase">
             &gt; IDENTIFICATION [NAME]
           </label>
           <input
+            id="name-input"
             required
+            autoComplete="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            disabled={isSubmitting}
-            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono disabled:opacity-50"
+            disabled={status === 'sending'}
+            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none transition-all font-mono disabled:opacity-50"
             placeholder="GUEST_USER"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="block font-mono text-xs text-neutral-500 uppercase">
+          <label htmlFor="email-input" className="block font-mono text-xs text-neutral-500 uppercase">
             &gt; RETURN_ROUTING [EMAIL]
           </label>
           <input
+            id="email-input"
             required
+            autoComplete="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            disabled={isSubmitting}
-            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono disabled:opacity-50"
+            disabled={status === 'sending'}
+            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none transition-all font-mono disabled:opacity-50"
             placeholder="system@domain.tld"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="block font-mono text-xs text-neutral-500 uppercase">
+          <label htmlFor="subject-input" className="block font-mono text-xs text-neutral-500 uppercase">
             &gt; TRANSMISSION_VECTOR [SUBJECT]
           </label>
           <input
+            id="subject-input"
             required
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            disabled={isSubmitting}
-            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono disabled:opacity-50"
+            disabled={status === 'sending'}
+            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none transition-all font-mono disabled:opacity-50"
             placeholder="INQUIRY / OPPORTUNITY"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="block font-mono text-xs text-neutral-500 uppercase">
+          <label htmlFor="message-input" className="block font-mono text-xs text-neutral-500 uppercase">
             &gt; PAYLOAD [MESSAGE]
           </label>
           <textarea
+            id="message-input"
             required
             rows={8}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            disabled={isSubmitting}
-            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono resize-y disabled:opacity-50"
+            disabled={status === 'sending'}
+            className="w-full bg-neutral-100 dark:bg-gray-900 border border-neutral-300 dark:border-neutral-700 rounded-none px-4 py-3 text-neutral-900 dark:text-neutral-100 focus:outline-none transition-all font-mono resize-y disabled:opacity-50"
             placeholder="Awaiting input..."
           />
         </div>
@@ -147,14 +160,14 @@ export default function ContactPage() {
         <div className="pt-4">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={status === 'sending'}
             className={`w-full flex items-center justify-center font-mono font-bold py-4 px-6 rounded-none transition-all uppercase ${
-              isSubmitting 
+              status === 'sending' 
                 ? 'bg-neutral-800 text-[var(--color-terminal-green)]/50 cursor-not-allowed border border-neutral-700' 
                 : 'bg-[var(--color-terminal-green)] text-black hover:bg-green-400 active:bg-green-600'
             }`}
           >
-            {isSubmitting ? '[ ENCRYPTING & TRANSMITTING... ]' : 'TRANSMIT'}
+            {status === 'sending' ? '[ ENCRYPTING & TRANSMITTING... ]' : 'TRANSMIT'}
           </button>
         </div>
 

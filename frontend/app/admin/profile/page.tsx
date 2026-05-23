@@ -12,11 +12,14 @@ export default function ProfileEditor() {
     name: '',
     headline: '',
     bio: '',
+    currentFocus: '',
+    systemCapabilities: [],
     githubUrl: '',
     linkedInUrl: '',
     experiences: [],
     educations: [],
   })
+  const [capabilitiesInput, setCapabilitiesInput] = useState('')
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [resumeFile, setResumeFile] = useState<File | null>(null)
   
@@ -34,6 +37,9 @@ export default function ProfileEditor() {
         const data = await getGlobalProfile()
         if (data) {
           setProfile(data)
+          if (data.systemCapabilities) {
+            setCapabilitiesInput(data.systemCapabilities.join(', '))
+          }
           addLog('success', 'Profile data synchronized with server.')
         } else {
           addLog('info', 'No existing profile found. Ready for initialization.')
@@ -75,14 +81,14 @@ export default function ProfileEditor() {
   const addExperience = () => {
     setProfile(prev => ({
       ...prev,
-      experiences: [...(prev.experiences || []), { id: crypto.randomUUID(), jobTitle: '', company: '', startDate: new Date().toISOString().split('T')[0], isCurrent: false, description: '', technologies: [] }]
+      experiences: [...(prev.experiences || []), { id: crypto.randomUUID(), sortOrder: 0, jobTitle: '', company: '', startDate: new Date().toISOString().split('T')[0], isCurrent: false, description: '', technologies: [] }]
     }))
   }
 
   const addEducation = () => {
     setProfile(prev => ({
       ...prev,
-      educations: [...(prev.educations || []), { id: crypto.randomUUID(), degreeOrCertificate: '', institution: '', dateObtained: new Date().toISOString().split('T')[0], description: '' }]
+      educations: [...(prev.educations || []), { id: crypto.randomUUID(), sortOrder: 0, degreeOrCertificate: '', institution: '', dateObtained: new Date().toISOString().split('T')[0], description: '', focusLine: '' }]
     }))
   }
 
@@ -115,11 +121,18 @@ export default function ProfileEditor() {
 
     try {
       const formData = new FormData()
-      
+      // Sanitizing the comma-separated string before sending to the API
+      const capabilitiesArray = capabilitiesInput
+        .split(',')
+        .map(cap => cap.trim())
+        .filter(Boolean); // removes empty strings if there's a trailing comma
+
       formData.append('data', JSON.stringify({
         name: profile.name,
         headline: profile.headline,
         bio: profile.bio,
+        currentFocus: profile.currentFocus,
+        systemCapabilities: capabilitiesArray,
         githubUrl: profile.githubUrl,
         linkedInUrl: profile.linkedInUrl,
         experiences: profile.experiences || [],
@@ -214,6 +227,28 @@ export default function ProfileEditor() {
               onChange={handleInputChange}
               rows={6}
               className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans resize-y"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="font-mono text-xs text-neutral-500 uppercase">Current_Focus</label>
+            <input
+              name="currentFocus"
+              value={profile.currentFocus || ''}
+              onChange={handleInputChange}
+              placeholder="e.g., Industrial automation tools, SCADA data workflows..."
+              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="font-mono text-xs text-neutral-500 uppercase">System_Capabilities (Comma Separated)</label>
+            <input
+              name="systemCapabilities"
+              value={capabilitiesInput}
+              onChange={(e) => setCapabilitiesInput(e.target.value)}
+              placeholder="PLC_CONTROL, SCADA_HMI, C#_TOOLS..."
+              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
             />
           </div>
 
@@ -375,6 +410,15 @@ export default function ProfileEditor() {
               [X] REMOVE
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
+              <div className="space-y-2 col-span-1 md:col-span-2">
+                <label className="font-mono text-xs text-[var(--color-terminal-green)]">DISPLAY_ORDER</label>
+                <input
+                  type="number"
+                  value={exp.sortOrder || 0}
+                  onChange={(e) => handleExperienceChange(index, 'sortOrder', parseInt(e.target.value) || 0)}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-[var(--color-terminal-green)]/30 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
               <div className="space-y-2">
                 <label className="font-mono text-xs text-neutral-500">JOB_TITLE</label>
                 <input
@@ -472,6 +516,15 @@ export default function ProfileEditor() {
               [X] REMOVE
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
+              <div className="space-y-2 col-span-1 md:col-span-2">
+                <label className="font-mono text-xs text-[var(--color-terminal-green)]">DISPLAY_ORDER</label>
+                <input
+                  type="number"
+                  value={edu.sortOrder || 0}
+                  onChange={(e) => handleEducationChange(index, 'sortOrder', parseInt(e.target.value) || 0)}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-[var(--color-terminal-green)]/30 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
               <div className="col-span-1 md:col-span-2 space-y-2">
                 <label className="font-mono text-xs text-neutral-500">DEGREE_OR_CERTIFICATE</label>
                 <input
@@ -494,6 +547,15 @@ export default function ProfileEditor() {
                   type="date"
                   value={edu.dateObtained.split('T')[0]}
                   onChange={(e) => handleEducationChange(index, 'dateObtained', new Date(e.target.value).toISOString())}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="font-mono text-xs text-neutral-500">FOCUS_LINE (Optional)</label>
+                <input
+                  value={edu.focusLine || ''}
+                  onChange={(e) => handleEducationChange(index, 'focusLine', e.target.value)}
+                  placeholder="Focus: automation, electronics, and control systems."
                   className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
                 />
               </div>

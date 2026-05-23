@@ -105,7 +105,7 @@ namespace otdev.AzFunctionApp
                 Slug = GenerateSlug(requestData.Title),
                 CreatedAt = DateTime.UtcNow,
                 IsPublished = requestData.IsPublished ?? false,
-                PublishedAt = (requestData.IsPublished == true) ? DateTime.UtcNow : null
+                PublishedAt = requestData.PublishedAt ?? ((requestData.IsPublished == true) ? DateTime.UtcNow : null)
             };
 
             // Process image uploads concurrently if any files are attached.
@@ -189,11 +189,20 @@ namespace otdev.AzFunctionApp
             post.Slug = GenerateSlug(requestData.Title);
             post.UpdatedAt = DateTime.UtcNow;
 
-            if (requestData.IsPublished == true && !post.IsPublished)
+            if (requestData.PublishedAt.HasValue)
+            {
+                post.PublishedAt = requestData.PublishedAt;
+            }
+            else if (requestData.IsPublished == true && !post.IsPublished)
             {
                 post.PublishedAt = DateTime.UtcNow;
             }
-            post.IsPublished = requestData.IsPublished ?? false;
+            else if (requestData.IsPublished == false)
+            {
+                post.PublishedAt = null;
+            }
+
+            post.IsPublished = requestData.IsPublished ?? post.IsPublished;
 
             // Process image uploads concurrently if any files are attached.
             var uploadedImageUrls = new List<string>();

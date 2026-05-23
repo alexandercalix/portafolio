@@ -69,6 +69,16 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           onChange={(val) => onChange(val || '')}
           height={500}
           preview="live"
+          previewOptions={{
+            components: {
+              img: (props: any) => {
+                if (!props.src) {
+                  return <span className="text-neutral-500 italic font-mono text-xs">[IMAGE_URL_PENDING]</span>
+                }
+                return <img {...props} />
+              }
+            }
+          }}
         />
       </div>
 
