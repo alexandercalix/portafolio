@@ -23,6 +23,9 @@ export default function PublicLayout({
             <Link href="/blog" className="text-sm font-mono text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:text-neutral-100 transition-colors">
               /blog
             </Link>
+            <Link href="/contact" className="text-sm font-mono text-[var(--color-terminal-green)] hover:text-green-400 transition-colors">
+              /contact
+            </Link>
             <ThemeToggle />
           </nav>
         </div>

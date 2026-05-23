@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using otdev.Backend.Common;
 using otdev.Backend.Models;
 using otdev.Backend.Services;
+using otdev.Backend.Services.Domains;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace otdev.AzFunctionApp
 {
@@ -19,13 +21,15 @@ namespace otdev.AzFunctionApp
     /// </summary>
     public class ProjectEndpoints
     {
-        private readonly IMongoService _mongoService;
+        private readonly IProjectService _mongoService;
         private readonly IR2Service _r2Service;
+        private readonly IMediaService _mediaService;
 
-        public ProjectEndpoints(IMongoService mongoService, IR2Service r2Service)
+        public ProjectEndpoints(IProjectService mongoService, IR2Service r2Service, IMediaService mediaService)
         {
             _mongoService = mongoService;
             _r2Service = r2Service;
+            _mediaService = mediaService;
         }
 
         [Function("GetProjects")]
@@ -91,6 +95,7 @@ namespace otdev.AzFunctionApp
 
             var project = new PortfolioProject
             {
+                Id = ObjectId.GenerateNewId().ToString(),
                 Title = requestData.Title,
                 Description = requestData.Description,
                 LiveUrl = requestData.Url,
@@ -143,6 +148,16 @@ namespace otdev.AzFunctionApp
             project.CreatedAt = DateTime.UtcNow;
             await _mongoService.CreateProjectAsync(project);
             
+            var imageUrls = Regex.Matches(project.Description ?? "", @"!\[.*?\]\((.*?)\)")
+                .Cast<Match>()
+                .Select(m => m.Groups[1].Value)
+                .ToList();
+
+            if (imageUrls.Any() && project.Id != null)
+            {
+                await _mediaService.UpdateMediaAssetsStatusByUrlsAsync(imageUrls, "Linked", project.Id);
+            }
+            
             var response = req.CreateResponse(HttpStatusCode.Created);
             await response.WriteAsJsonAsync(project);
             return response;
@@ -159,7 +174,7 @@ namespace otdev.AzFunctionApp
 
             if (requestData == null || string.IsNullOrWhiteSpace(requestData.Title)) return req.CreateResponse(HttpStatusCode.BadRequest);
 
-            try { var project = await _mongoService.GetProjectByIdAsync(id); if (project == null) return req.CreateResponse(HttpStatusCode.NotFound); var response = req.CreateResponse(HttpStatusCode.OK); await response.WriteAsJsonAsync(project); return response; } catch (Exception ex) { var err = req.CreateResponse(HttpStatusCode.InternalServerError); await err.WriteStringAsync(ex.ToString()); return err; }
+            var project = await _mongoService.GetProjectByIdAsync(id);
             if (project == null) return req.CreateResponse(HttpStatusCode.NotFound);
 
             project.Title = requestData.Title;
@@ -223,6 +238,17 @@ namespace otdev.AzFunctionApp
             }
 
             await _mongoService.UpdateProjectAsync(id, project);
+
+            var imageUrls = Regex.Matches(project.Description ?? "", @"!\[.*?\]\((.*?)\)")
+                .Cast<Match>()
+                .Select(m => m.Groups[1].Value)
+                .ToList();
+
+            if (project.Id != null)
+            {
+                await _mediaService.UpdateMediaAssetsStatusByUrlsAsync(imageUrls, "Linked", project.Id);
+                await _mediaService.MarkMissingMediaAsOrphanedAsync(project.Id, imageUrls);
+            }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(project);

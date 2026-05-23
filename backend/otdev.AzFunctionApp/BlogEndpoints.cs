@@ -4,12 +4,14 @@ using Microsoft.Azure.Functions.Worker.Http;
 using otdev.Backend.Common;
 using otdev.Backend.Models;
 using otdev.Backend.Services;
+using otdev.Backend.Services.Domains;
 using System;
 using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace otdev.AzFunctionApp
 {
@@ -18,13 +20,15 @@ namespace otdev.AzFunctionApp
     /// </summary>
     public class BlogEndpoints
     {
-        private readonly IMongoService _mongoService;
+        private readonly IBlogService _mongoService;
         private readonly IR2Service _r2Service;
+        private readonly IMediaService _mediaService;
 
-        public BlogEndpoints(IMongoService mongoService, IR2Service r2Service)
+        public BlogEndpoints(IBlogService mongoService, IR2Service r2Service, IMediaService mediaService)
         {
             _mongoService = mongoService;
             _r2Service = r2Service;
+            _mediaService = mediaService;
         }
 
         [Function("GetBlogPosts")]
@@ -90,6 +94,7 @@ namespace otdev.AzFunctionApp
 
             var post = new BlogPost
             {
+                Id = ObjectId.GenerateNewId().ToString(),
                 Title = requestData.Title,
                 Content = requestData.Content,
                 Excerpt = requestData.Excerpt,
@@ -144,6 +149,16 @@ namespace otdev.AzFunctionApp
 
             post.CreatedAt = DateTime.UtcNow;
             await _mongoService.CreateBlogPostAsync(post);
+            
+            var imageUrls = Regex.Matches(post.Content ?? "", @"!\[.*?\]\((.*?)\)")
+                .Cast<Match>()
+                .Select(m => m.Groups[1].Value)
+                .ToList();
+
+            if (imageUrls.Any() && post.Id != null)
+            {
+                await _mediaService.UpdateMediaAssetsStatusByUrlsAsync(imageUrls, "Linked", post.Id);
+            }
             
             var response = req.CreateResponse(HttpStatusCode.Created);
             await response.WriteAsJsonAsync(post);
@@ -219,6 +234,17 @@ namespace otdev.AzFunctionApp
             }
 
             await _mongoService.UpdateBlogPostAsync(id, post);
+
+            var imageUrls = Regex.Matches(post.Content ?? "", @"!\[.*?\]\((.*?)\)")
+                .Cast<Match>()
+                .Select(m => m.Groups[1].Value)
+                .ToList();
+
+            if (post.Id != null)
+            {
+                await _mediaService.UpdateMediaAssetsStatusByUrlsAsync(imageUrls, "Linked", post.Id);
+                await _mediaService.MarkMissingMediaAsOrphanedAsync(post.Id, imageUrls);
+            }
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(post);

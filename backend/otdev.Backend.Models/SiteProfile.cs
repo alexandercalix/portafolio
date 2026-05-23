@@ -1,6 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
 
 namespace otdev.Backend.Models
 {
@@ -33,5 +34,11 @@ namespace otdev.Backend.Models
 
         [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        [BsonElement("experiences")]
+        public List<Experience> Experiences { get; set; } = new List<Experience>();
+
+        [BsonElement("educations")]
+        public List<Education> Educations { get; set; } = new List<Education>();
     }
 }

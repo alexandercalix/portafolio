@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 using otdev.Backend.Services;
+using otdev.Backend.Services.Domains;
 using System;
 
 var builder = FunctionsApplication.CreateBuilder(args);
@@ -41,7 +42,12 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 });
 
 builder.Services
-    .AddSingleton<IMongoService, MongoService>()
-    .AddSingleton<IR2Service, R2Service>();
+    .AddSingleton<IBlogService, BlogService>()
+    .AddSingleton<IProjectService, ProjectService>()
+    .AddSingleton<IProfileService, ProfileService>()
+    .AddSingleton<IContactMessageService, ContactMessageService>()
+    .AddSingleton<IMediaService, MediaService>()
+    .AddSingleton<IR2Service, R2Service>()
+    .AddSingleton<ITemplateService, TemplateService>();
 
 builder.Build().Run();

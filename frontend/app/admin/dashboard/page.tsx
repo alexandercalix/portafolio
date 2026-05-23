@@ -1,9 +1,11 @@
 import { auth } from "@/auth"
 import { Activity, FolderGit2, BookOpen } from "lucide-react"
+import { getGlobalProfile } from "@/src/lib/api"
 
 export default async function DashboardPage() {
   const session = await auth()
-  const userName = session?.user?.name || "Administrator"
+  const profile = await getGlobalProfile()
+  const userName = profile?.name || session?.user?.name || "Administrator"
 
   return (
     <div className="space-y-8">

@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using otdev.Backend.Common;
 using otdev.Backend.Models;
 using otdev.Backend.Services;
+using otdev.Backend.Services.Domains;
 using System;
 using System.Linq;
 using System.Net;
@@ -14,10 +15,10 @@ namespace otdev.AzFunctionApp
 {
     public class ProfileEndpoints
     {
-        private readonly IMongoService _mongoService;
+        private readonly IProfileService _mongoService;
         private readonly IR2Service _r2Service;
 
-        public ProfileEndpoints(IMongoService mongoService, IR2Service r2Service)
+        public ProfileEndpoints(IProfileService mongoService, IR2Service r2Service)
         {
             _mongoService = mongoService;
             _r2Service = r2Service;
@@ -50,6 +51,8 @@ namespace otdev.AzFunctionApp
             profile.Bio = requestData.Bio;
             profile.GithubUrl = requestData.GithubUrl;
             profile.LinkedInUrl = requestData.LinkedInUrl;
+            profile.Experiences = requestData.Experiences;
+            profile.Educations = requestData.Educations;
             profile.UpdatedAt = DateTime.UtcNow;
 
             // Handle Avatar

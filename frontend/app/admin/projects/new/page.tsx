@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { postProject } from '@/src/lib/api'
 import { UploadCloud, Save, Loader2, Image as ImageIcon, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
+import Link from "next/link"
+import AuthProvider from "@/src/components/AuthProvider"
+import RichEditor from "@/src/components/RichEditor"
 
-export default function NewProjectEditor() {
+export default function NewProjectPage() {
   const { data: session } = useSession()
   const router = useRouter()
 
@@ -143,13 +145,9 @@ export default function NewProjectEditor() {
             <label className="font-mono text-xs text-neutral-500 uppercase flex justify-between">
               <span>Description_Buffer (Markdown Supported)</span>
             </label>
-            <textarea
-              required
+            <RichEditor
               value={description}
-              onChange={e => setDescription(e.target.value)}
-              rows={10}
-              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono text-sm resize-y"
-              placeholder="Write technical specifications here..."
+              onChange={setDescription}
             />
           </div>
 

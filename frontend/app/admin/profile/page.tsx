@@ -14,6 +14,8 @@ export default function ProfileEditor() {
     bio: '',
     githubUrl: '',
     linkedInUrl: '',
+    experiences: [],
+    educations: [],
   })
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [resumeFile, setResumeFile] = useState<File | null>(null)
@@ -54,6 +56,50 @@ export default function ProfileEditor() {
     setProfile(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleExperienceChange = (index: number, field: string, value: any) => {
+    setProfile(prev => {
+      const newExp = [...(prev.experiences || [])]
+      newExp[index] = { ...newExp[index], [field]: value }
+      return { ...prev, experiences: newExp }
+    })
+  }
+
+  const handleEducationChange = (index: number, field: string, value: any) => {
+    setProfile(prev => {
+      const newEdu = [...(prev.educations || [])]
+      newEdu[index] = { ...newEdu[index], [field]: value }
+      return { ...prev, educations: newEdu }
+    })
+  }
+
+  const addExperience = () => {
+    setProfile(prev => ({
+      ...prev,
+      experiences: [...(prev.experiences || []), { id: crypto.randomUUID(), jobTitle: '', company: '', startDate: new Date().toISOString().split('T')[0], isCurrent: false, description: '', technologies: [] }]
+    }))
+  }
+
+  const addEducation = () => {
+    setProfile(prev => ({
+      ...prev,
+      educations: [...(prev.educations || []), { id: crypto.randomUUID(), degreeOrCertificate: '', institution: '', dateObtained: new Date().toISOString().split('T')[0], description: '' }]
+    }))
+  }
+
+  const removeExperience = (index: number) => {
+    setProfile(prev => ({
+      ...prev,
+      experiences: prev.experiences?.filter((_, i) => i !== index)
+    }))
+  }
+
+  const removeEducation = (index: number) => {
+    setProfile(prev => ({
+      ...prev,
+      educations: prev.educations?.filter((_, i) => i !== index)
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -76,6 +122,8 @@ export default function ProfileEditor() {
         bio: profile.bio,
         githubUrl: profile.githubUrl,
         linkedInUrl: profile.linkedInUrl,
+        experiences: profile.experiences || [],
+        educations: profile.educations || [],
       }))
 
       if (avatarFile) {
@@ -301,6 +349,167 @@ export default function ProfileEditor() {
         </div>
 
       </form>
+
+      {/* Experience Section */}
+      <div className="bg-white dark:bg-[#111315] p-6 rounded-lg border border-neutral-200 dark:border-neutral-800 mt-8 space-y-6">
+        <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2">
+          <h2 className="text-lg font-mono text-neutral-600 dark:text-neutral-400">
+            &gt; EXPERIENCE_ARRAY
+          </h2>
+          <button
+            type="button"
+            onClick={addExperience}
+            className="text-xs font-mono px-3 py-1 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors border border-neutral-300 dark:border-neutral-700"
+          >
+            [+] ADD NEW EXPERIENCE
+          </button>
+        </div>
+
+        {profile.experiences?.map((exp, index) => (
+          <div key={exp.id} className="p-4 border border-neutral-200 dark:border-neutral-800 rounded bg-neutral-50 dark:bg-[#0a0a0c] space-y-4 relative">
+            <button
+              type="button"
+              onClick={() => removeExperience(index)}
+              className="absolute top-4 right-4 text-xs font-mono px-2 py-1 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20"
+            >
+              [X] REMOVE
+            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
+              <div className="space-y-2">
+                <label className="font-mono text-xs text-neutral-500">JOB_TITLE</label>
+                <input
+                  value={exp.jobTitle}
+                  onChange={(e) => handleExperienceChange(index, 'jobTitle', e.target.value)}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-mono text-xs text-neutral-500">COMPANY</label>
+                <input
+                  value={exp.company}
+                  onChange={(e) => handleExperienceChange(index, 'company', e.target.value)}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-mono text-xs text-neutral-500">START_DATE</label>
+                <input
+                  type="date"
+                  value={exp.startDate.split('T')[0]}
+                  onChange={(e) => handleExperienceChange(index, 'startDate', new Date(e.target.value).toISOString())}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-mono text-xs text-neutral-500">END_DATE</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="date"
+                    disabled={exp.isCurrent}
+                    value={exp.endDate ? exp.endDate.split('T')[0] : ''}
+                    onChange={(e) => handleExperienceChange(index, 'endDate', new Date(e.target.value).toISOString())}
+                    className="flex-1 bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none disabled:opacity-50"
+                  />
+                  <label className="flex items-center gap-2 font-mono text-xs text-neutral-500 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={exp.isCurrent}
+                      onChange={(e) => {
+                        handleExperienceChange(index, 'isCurrent', e.target.checked);
+                        if (e.target.checked) handleExperienceChange(index, 'endDate', undefined);
+                      }}
+                      className="accent-[var(--color-terminal-green)]"
+                    />
+                    CURRENT
+                  </label>
+                </div>
+              </div>
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="font-mono text-xs text-neutral-500">DESCRIPTION (Paragraph)</label>
+                <textarea
+                  value={exp.description}
+                  onChange={(e) => handleExperienceChange(index, 'description', e.target.value)}
+                  rows={3}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="font-mono text-xs text-neutral-500">TECHNOLOGIES (Comma separated)</label>
+                <input
+                  value={exp.technologies?.join(', ') || ''}
+                  onChange={(e) => handleExperienceChange(index, 'technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t))}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                  placeholder="React, Node, Azure..."
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Education Section */}
+      <div className="bg-white dark:bg-[#111315] p-6 rounded-lg border border-neutral-200 dark:border-neutral-800 mt-8 space-y-6">
+        <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2">
+          <h2 className="text-lg font-mono text-neutral-600 dark:text-neutral-400">
+            &gt; EDUCATION_ARRAY
+          </h2>
+          <button
+            type="button"
+            onClick={addEducation}
+            className="text-xs font-mono px-3 py-1 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors border border-neutral-300 dark:border-neutral-700"
+          >
+            [+] ADD NEW EDUCATION
+          </button>
+        </div>
+
+        {profile.educations?.map((edu, index) => (
+          <div key={edu.id} className="p-4 border border-neutral-200 dark:border-neutral-800 rounded bg-neutral-50 dark:bg-[#0a0a0c] space-y-4 relative">
+            <button
+              type="button"
+              onClick={() => removeEducation(index)}
+              className="absolute top-4 right-4 text-xs font-mono px-2 py-1 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20"
+            >
+              [X] REMOVE
+            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="font-mono text-xs text-neutral-500">DEGREE_OR_CERTIFICATE</label>
+                <input
+                  value={edu.degreeOrCertificate}
+                  onChange={(e) => handleEducationChange(index, 'degreeOrCertificate', e.target.value)}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-mono text-xs text-neutral-500">INSTITUTION</label>
+                <input
+                  value={edu.institution}
+                  onChange={(e) => handleEducationChange(index, 'institution', e.target.value)}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="font-mono text-xs text-neutral-500">DATE_OBTAINED</label>
+                <input
+                  type="date"
+                  value={edu.dateObtained.split('T')[0]}
+                  onChange={(e) => handleEducationChange(index, 'dateObtained', new Date(e.target.value).toISOString())}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+              <div className="col-span-1 md:col-span-2 space-y-2">
+                <label className="font-mono text-xs text-neutral-500">DESCRIPTION (Optional)</label>
+                <textarea
+                  value={edu.description}
+                  onChange={(e) => handleEducationChange(index, 'description', e.target.value)}
+                  rows={2}
+                  className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-3 py-1.5 text-sm focus:border-[var(--color-terminal-green)] outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

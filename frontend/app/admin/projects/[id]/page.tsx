@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { getProjectById, putProject } from '@/src/lib/api'
 import { UploadCloud, Save, Loader2, Image as ImageIcon, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import RichEditor from '@/src/components/RichEditor'
 
 export default function EditProjectEditor({ params }: { params: Promise<{ id: string }> }) {
   const { data: session } = useSession()
@@ -183,12 +184,9 @@ export default function EditProjectEditor({ params }: { params: Promise<{ id: st
             <label className="font-mono text-xs text-neutral-500 uppercase flex justify-between">
               <span>Description_Buffer (Markdown Supported)</span>
             </label>
-            <textarea
-              required
+            <RichEditor
               value={description}
-              onChange={e => setDescription(e.target.value)}
-              rows={10}
-              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono text-sm resize-y"
+              onChange={setDescription}
             />
           </div>
 

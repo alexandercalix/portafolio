@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { postBlogPost } from '@/src/lib/api'
 import { UploadCloud, Save, Loader2, Image as ImageIcon, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import RichEditor from '@/src/components/RichEditor'
 
 export default function NewBlogPostEditor() {
   const { data: session } = useSession()
@@ -126,12 +127,9 @@ export default function NewBlogPostEditor() {
             <label className="font-mono text-xs text-neutral-500 uppercase flex justify-between">
               <span>Content_Buffer (Markdown Supported)</span>
             </label>
-            <textarea
-              required
+            <RichEditor
               value={content}
-              onChange={e => setContent(e.target.value)}
-              className="w-full flex-1 bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-4 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-mono text-sm resize-none"
-              placeholder="Start writing the blog post..."
+              onChange={setContent}
             />
           </div>
 

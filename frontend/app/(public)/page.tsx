@@ -1,6 +1,7 @@
 import { getGlobalProfile } from "@/src/lib/api"
-import { DownloadCloud, FolderGit2 } from "lucide-react"
+import { DownloadCloud, FolderGit2, Terminal, BookOpen } from "lucide-react"
 import Link from "next/link"
+import ExperienceTimeline from "@/src/components/ExperienceTimeline"
 
 // This page is a Server Component and will be rendered on the server/edge.
 // Revalidation can be configured in the fetch utility or here.
@@ -61,12 +62,28 @@ export default async function HomePage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 pt-4">
+            <a 
+              href="#experience"
+              className="flex items-center gap-2 bg-[var(--color-terminal-green)] text-black font-mono font-bold py-3 px-6 rounded transition-transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Terminal className="w-5 h-5" />
+              <span>READ_EXECUTION_LOG</span>
+            </a>
+
             <Link 
               href="/projects"
-              className="flex items-center gap-2 bg-[var(--color-terminal-green)] text-black font-mono font-bold py-3 px-6 rounded transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center gap-2 bg-white dark:bg-[#111315] border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-mono font-bold py-3 px-6 rounded hover:bg-[var(--color-terminal-green)]/10 hover:border-[var(--color-terminal-green)] hover:text-[var(--color-terminal-green)] transition-all"
             >
               <FolderGit2 className="w-5 h-5" />
               <span>INITIALIZE_PROJECTS</span>
+            </Link>
+
+            <Link 
+              href="/blogs"
+              className="flex items-center gap-2 bg-white dark:bg-[#111315] border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-mono font-bold py-3 px-6 rounded hover:bg-[var(--color-terminal-green)]/10 hover:border-[var(--color-terminal-green)] hover:text-[var(--color-terminal-green)] transition-all"
+            >
+              <BookOpen className="w-5 h-5" />
+              <span>ACCESS_DATABANKS</span>
             </Link>
 
             {profile.resumeUrl && (
@@ -82,6 +99,13 @@ export default async function HomePage() {
             )}
           </div>
         </div>
+      </div>
+
+      <div id="experience" className="w-full pt-16 mt-16 border-t border-neutral-200 dark:border-neutral-800 scroll-mt-8">
+        <ExperienceTimeline 
+          experiences={profile.experiences || []} 
+          educations={profile.educations || []} 
+        />
       </div>
 
     </div>

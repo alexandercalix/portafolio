@@ -1,6 +1,6 @@
 'use client'
 
-import { LayoutDashboard, UserCircle, Briefcase, FileText, LogOut } from 'lucide-react'
+import { LayoutDashboard, UserCircle, Briefcase, FileText, LogOut, MessageSquare, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
@@ -13,6 +13,8 @@ export default function SidebarNav() {
     { name: 'Global Profile', href: '/admin/profile', icon: UserCircle },
     { name: 'Projects', href: '/admin/projects', icon: Briefcase },
     { name: 'Blog', href: '/admin/blog', icon: FileText },
+    { name: 'Messages', href: '/admin/messages', icon: MessageSquare },
+    { name: 'Settings', href: '/admin/settings/email', icon: Settings },
   ]
 
   return (
