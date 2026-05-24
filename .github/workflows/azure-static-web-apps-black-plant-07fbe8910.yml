@@ -38,13 +38,21 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_PLANT_07FBE8910 }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/frontend" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: ".next" # Built app content directory - optional
+          ###### Repository/Build Configurations ######
+          app_location: "/frontend" 
+          api_location: "" 
+          output_location: ".next" 
           github_id_token: ${{ steps.idtoken.outputs.result }}
           ###### End of Repository/Build Configurations ######
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
+          AUTH_URL: ${{ secrets.AUTH_URL }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          AUTH_ENTRA_ID_CLIENT_ID: ${{ secrets.AUTH_ENTRA_ID_CLIENT_ID }}
+          AUTH_ENTRA_ID_CLIENT_SECRET: ${{ secrets.AUTH_ENTRA_ID_CLIENT_SECRET }}
+          AUTH_ENTRA_ID_TENANT_ID: ${{ secrets.AUTH_ENTRA_ID_TENANT_ID }}
+          AUTH_ENTRA_ID_API_SCOPE: ${{ secrets.AUTH_ENTRA_ID_API_SCOPE }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
