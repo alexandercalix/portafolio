@@ -232,23 +232,25 @@ export default function ProfileEditor() {
 
           <div className="space-y-2">
             <label className="font-mono text-xs text-neutral-500 uppercase">Current_Focus</label>
-            <input
+            <textarea
               name="currentFocus"
               value={profile.currentFocus || ''}
               onChange={handleInputChange}
+              rows={3}
               placeholder="e.g., Industrial automation tools, SCADA data workflows..."
-              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
+              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans resize-y"
             />
           </div>
 
           <div className="space-y-2">
             <label className="font-mono text-xs text-neutral-500 uppercase">System_Capabilities (Comma Separated)</label>
-            <input
+            <textarea
               name="systemCapabilities"
               value={capabilitiesInput}
               onChange={(e) => setCapabilitiesInput(e.target.value)}
+              rows={3}
               placeholder="PLC_CONTROL, SCADA_HMI, C#_TOOLS..."
-              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
+              className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans resize-y"
             />
           </div>
 

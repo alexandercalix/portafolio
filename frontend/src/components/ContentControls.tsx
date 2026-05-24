@@ -4,6 +4,7 @@ import React from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { LayoutGrid, List } from 'lucide-react'
 import { trackEvent } from '@/src/utils/analytics'
+import { motion } from 'framer-motion'
 
 interface ContentControlsProps {
   uniqueTags: string[];
@@ -36,7 +37,12 @@ export default function ContentControls({ uniqueTags }: ContentControlsProps) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 mb-8">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5, duration: 0.4, ease: "easeOut" }}
+      className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 mb-8"
+    >
       
       {/* Scrollable Tags */}
       <div className="flex-1 overflow-x-auto w-full no-scrollbar">
@@ -99,6 +105,6 @@ export default function ContentControls({ uniqueTags }: ContentControlsProps) {
         </button>
       </div>
 
-    </div>
+    </motion.div>
   )
 }

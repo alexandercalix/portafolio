@@ -1,12 +1,16 @@
 import Link from "next/link"
 import PublicHeader from "@/src/components/PublicHeader"
+import { getGlobalProfile } from "@/src/lib/api"
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   const currentYear = new Date().getFullYear()
+  const profile = await getGlobalProfile().catch(() => null)
+  const githubUrl = profile?.githubUrl || "https://github.com"
+  const linkedInUrl = profile?.linkedInUrl || "https://linkedin.com"
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)]">
@@ -24,14 +28,14 @@ export default function PublicLayout({
           <div className="text-neutral-500 font-mono text-xs">
             © {currentYear} otdev.io // SYSTEM_ONLINE
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="https://github.com" target="_blank" className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-300 transition-colors font-mono text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+            <Link href={githubUrl} target="_blank" className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-300 transition-colors font-mono text-xs">
               [GITHUB]
             </Link>
-            <Link href="https://linkedin.com" target="_blank" className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-300 transition-colors font-mono text-xs">
+            <Link href={linkedInUrl} target="_blank" className="text-neutral-500 hover:text-neutral-700 dark:text-neutral-300 transition-colors font-mono text-xs">
               [LINKEDIN]
             </Link>
-            <Link href="/admin/dashboard" className="text-neutral-600 hover:text-[var(--color-warning-amber)] transition-colors font-mono text-[10px] ml-4">
+            <Link href="/admin/dashboard" className="text-neutral-600 hover:text-[var(--color-warning-amber)] transition-colors font-mono text-[10px] md:ml-4">
               [sys_admin]
             </Link>
           </div>

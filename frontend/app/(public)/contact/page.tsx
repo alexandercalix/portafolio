@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 import { trackEvent } from '@/src/utils/analytics'
+import AnimatedPageHeader from '@/src/components/AnimatedPageHeader'
+import { motion } from 'framer-motion'
 
 export default function ContactPage() {
   const [name, setName] = useState('')
@@ -59,16 +61,18 @@ export default function ContactPage() {
   return (
     <div className="w-full max-w-2xl mx-auto space-y-12 pb-24">
       
-      <div className="border-b border-neutral-200 dark:border-neutral-800 pb-8 space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 uppercase">
-          Contact Protocol
-        </h1>
-        <p className="text-neutral-600 dark:text-neutral-400 font-mono text-sm">
-          Initialize a direct connection. Secure transmission link established.
-        </p>
-      </div>
+      <AnimatedPageHeader 
+        title="Contact Protocol"
+        subtitle="Initialize a direct connection. Secure transmission link established."
+      />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <motion.form 
+        initial={{ opacity: 0, y: 15 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
+        onSubmit={handleSubmit} 
+        className="space-y-6"
+      >
         
         {/* Error / Success Banners */}
         {status === 'sending' && (
@@ -171,7 +175,7 @@ export default function ContactPage() {
           </button>
         </div>
 
-      </form>
+      </motion.form>
 
     </div>
   )
