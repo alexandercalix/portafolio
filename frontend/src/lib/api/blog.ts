@@ -1,4 +1,4 @@
-import { fetchApi } from '../apiClient';
+import { fetchWithRetry } from '../apiClient';
 import { BlogPost, PagedResult } from '../../models/types';
 
 export async function getBlogPosts(page = 1, pageSize = 10, token?: string, includeDrafts = false): Promise<PagedResult<BlogPost>> {
@@ -8,14 +8,14 @@ export async function getBlogPosts(page = 1, pageSize = 10, token?: string, incl
     }
 
     const endpoint = includeDrafts ? `/cms/blogs?page=${page}&pageSize=${pageSize}` : `/blogs?page=${page}&pageSize=${pageSize}`;
-    return fetchApi<PagedResult<BlogPost>>(endpoint, {
+    return fetchWithRetry<PagedResult<BlogPost>>(endpoint, {
         headers,
         ...(includeDrafts ? { cache: 'no-store' } : { next: { revalidate: 60 } })
     });
 }
 
 export async function postBlogPost(formData: FormData, token: string): Promise<BlogPost> {
-    return fetchApi<BlogPost>('/blogs', {
+    return fetchWithRetry<BlogPost>('/blogs', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -25,7 +25,7 @@ export async function postBlogPost(formData: FormData, token: string): Promise<B
 }
 
 export async function putBlogPost(id: string, formData: FormData, token: string): Promise<BlogPost> {
-    return fetchApi<BlogPost>(`/blogs/${id}`, {
+    return fetchWithRetry<BlogPost>(`/blogs/${id}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -36,7 +36,7 @@ export async function putBlogPost(id: string, formData: FormData, token: string)
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
     try {
-        return await fetchApi<BlogPost>(`/blogs/${slug}`, {
+        return await fetchWithRetry<BlogPost>(`/blogs/${slug}`, {
             next: { revalidate: 60 }
         });
     } catch (err) {
@@ -49,7 +49,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
 
 export async function getBlogPostById(id: string, token: string): Promise<BlogPost | null> {
     try {
-        return await fetchApi<BlogPost>(`/cms/blogs/${id}`, {
+        return await fetchWithRetry<BlogPost>(`/cms/blogs/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },

@@ -1,4 +1,4 @@
-import { fetchApi } from '../apiClient';
+import { fetchWithRetry } from '../apiClient';
 
 export interface EmailTemplate {
     id: string;
@@ -8,7 +8,7 @@ export interface EmailTemplate {
 
 export async function getEmailTemplate(id: string, token: string): Promise<EmailTemplate | null> {
     try {
-        return await fetchApi<EmailTemplate>(`/templates/${id}`, {
+        return await fetchWithRetry<EmailTemplate>(`/templates/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -23,7 +23,7 @@ export async function getEmailTemplate(id: string, token: string): Promise<Email
 }
 
 export async function putEmailTemplate(id: string, markdownBody: string, token: string): Promise<EmailTemplate> {
-    return fetchApi<EmailTemplate>(`/templates/${id}`, {
+    return fetchWithRetry<EmailTemplate>(`/templates/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

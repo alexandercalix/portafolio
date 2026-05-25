@@ -1,4 +1,4 @@
-import { fetchApi } from '../apiClient';
+import { fetchWithRetry } from '../apiClient';
 
 export interface SiteSettings {
     id: string;
@@ -9,7 +9,7 @@ export interface SiteSettings {
 
 export async function getSiteSettings(): Promise<SiteSettings | null> {
     try {
-        return await fetchApi<SiteSettings>('/settings', {
+        return await fetchWithRetry<SiteSettings>('/settings', {
             cache: 'no-store'
         });
     } catch (err) {
@@ -21,7 +21,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
 }
 
 export async function putSiteSettings(settings: Partial<SiteSettings>, token: string): Promise<SiteSettings> {
-    return fetchApi<SiteSettings>('/settings', {
+    return fetchWithRetry<SiteSettings>('/settings', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

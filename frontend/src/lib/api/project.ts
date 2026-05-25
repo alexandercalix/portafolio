@@ -1,4 +1,4 @@
-import { fetchApi } from '../apiClient';
+import { fetchWithRetry } from '../apiClient';
 import { Project, PagedResult } from '../../models/types';
 
 export async function getProjects(page = 1, pageSize = 10, token?: string, includeDrafts = false): Promise<PagedResult<Project>> {
@@ -8,14 +8,14 @@ export async function getProjects(page = 1, pageSize = 10, token?: string, inclu
     }
 
     const endpoint = includeDrafts ? `/cms/projects?page=${page}&pageSize=${pageSize}` : `/projects?page=${page}&pageSize=${pageSize}`;
-    return fetchApi<PagedResult<Project>>(endpoint, {
+    return fetchWithRetry<PagedResult<Project>>(endpoint, {
         headers,
         ...(includeDrafts ? { cache: 'no-store' } : { next: { revalidate: 60 } })
     });
 }
 
 export async function postProject(formData: FormData, token: string): Promise<Project> {
-    return fetchApi<Project>('/projects', {
+    return fetchWithRetry<Project>('/projects', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -25,7 +25,7 @@ export async function postProject(formData: FormData, token: string): Promise<Pr
 }
 
 export async function putProject(id: string, formData: FormData, token: string): Promise<Project> {
-    return fetchApi<Project>(`/projects/${id}`, {
+    return fetchWithRetry<Project>(`/projects/${id}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`
@@ -36,7 +36,7 @@ export async function putProject(id: string, formData: FormData, token: string):
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
     try {
-        return await fetchApi<Project>(`/projects/${slug}`, {
+        return await fetchWithRetry<Project>(`/projects/${slug}`, {
             next: { revalidate: 60 }
         });
     } catch (err) {
@@ -49,7 +49,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
 
 export async function getProjectById(id: string, token: string): Promise<Project | null> {
     try {
-        return await fetchApi<Project>(`/cms/projects/${id}`, {
+        return await fetchWithRetry<Project>(`/cms/projects/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
