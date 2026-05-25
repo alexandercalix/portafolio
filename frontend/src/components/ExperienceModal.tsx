@@ -24,7 +24,7 @@ export default function ExperienceModal({ experience, onClose }: ExperienceModal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
       <div 
-        className="bg-white dark:bg-[#111315] border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl shadow-2xl relative"
+        className="bg-white dark:bg-[#111315] border border-neutral-200 dark:border-neutral-800 w-full max-w-2xl shadow-2xl relative max-h-[90vh] flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Terminal Header */}
@@ -46,7 +46,7 @@ export default function ExperienceModal({ experience, onClose }: ExperienceModal
         </div>
 
         {/* Payload Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto">
           <div className="space-y-1">
             <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">{experience.jobTitle}</h2>
             <p className="font-mono text-[var(--color-terminal-green)] text-sm">{experience.company}</p>

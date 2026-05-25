@@ -56,6 +56,8 @@ namespace otdev.AzFunctionApp
             profile.Name = requestData.Name;
             profile.Headline = requestData.Headline;
             profile.Bio = requestData.Bio;
+            profile.AuthorTitle = requestData.AuthorTitle;
+            profile.AuthorBio = requestData.AuthorBio;
             profile.CurrentFocus = requestData.CurrentFocus;
             profile.SystemCapabilities = requestData.SystemCapabilities;
             profile.GithubUrl = requestData.GithubUrl;

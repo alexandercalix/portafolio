@@ -22,3 +22,9 @@ export function generateCleanExcerpt(markdown: string, maxLength: number = 120):
 
     return cleanText;
 }
+
+export function preserveMultipleNewlines(markdown: string): string {
+    if (!markdown) return '';
+    // Replace 3 or more consecutive newlines with non-breaking spaces acting as empty paragraphs
+    return markdown.replace(/\n{3,}/g, (match) => '\n\n' + '&nbsp;\n\n'.repeat(match.length - 2));
+}

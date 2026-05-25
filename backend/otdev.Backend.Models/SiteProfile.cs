@@ -41,6 +41,12 @@ namespace otdev.Backend.Models
         [BsonElement("updatedAt")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        [BsonElement("authorTitle")]
+        public string? AuthorTitle { get; set; }
+
+        [BsonElement("authorBio")]
+        public string? AuthorBio { get; set; }
+
         [BsonElement("experiences")]
         public List<Experience> Experiences { get; set; } = new List<Experience>();
 

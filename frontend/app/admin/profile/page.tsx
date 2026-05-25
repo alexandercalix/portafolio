@@ -12,6 +12,8 @@ export default function ProfileEditor() {
     name: '',
     headline: '',
     bio: '',
+    authorTitle: '',
+    authorBio: '',
     currentFocus: '',
     systemCapabilities: [],
     githubUrl: '',
@@ -131,6 +133,8 @@ export default function ProfileEditor() {
         name: profile.name,
         headline: profile.headline,
         bio: profile.bio,
+        authorTitle: profile.authorTitle,
+        authorBio: profile.authorBio,
         currentFocus: profile.currentFocus,
         systemCapabilities: capabilitiesArray,
         githubUrl: profile.githubUrl,
@@ -214,6 +218,30 @@ export default function ProfileEditor() {
                 value={profile.headline || ''}
                 onChange={handleInputChange}
                 required
+                className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="font-mono text-xs text-neutral-500 uppercase">Author_Title</label>
+              <input
+                name="authorTitle"
+                value={profile.authorTitle || ''}
+                onChange={handleInputChange}
+                placeholder="e.g. Lead Engineer (Shown on blog posts)"
+                className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="font-mono text-xs text-neutral-500 uppercase">Author_Bio_Short</label>
+              <input
+                name="authorBio"
+                value={profile.authorBio || ''}
+                onChange={handleInputChange}
+                placeholder="Brief description for author cards"
                 className="w-full bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 rounded px-4 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-[var(--color-terminal-green)] focus:ring-1 focus:ring-[var(--color-terminal-green)] transition-all font-sans"
               />
             </div>

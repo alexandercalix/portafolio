@@ -10,6 +10,8 @@ export interface SiteProfile {
     name: string;
     headline: string;
     bio: string;
+    authorTitle?: string;
+    authorBio?: string;
     currentFocus: string;
     systemCapabilities: string[];
     avatarUrl?: string;

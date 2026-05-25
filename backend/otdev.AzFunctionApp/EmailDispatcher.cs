@@ -7,17 +7,21 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using otdev.Backend.Models;
+using otdev.Backend.Services.Domains;
+using Markdig;
 
 namespace PortfolioBackend
 {
     public class EmailDispatcher
     {
         private readonly ILogger _logger;
+        private readonly ITemplateService _templateService;
         private static readonly HttpClient _httpClient = new HttpClient();
 
-        public EmailDispatcher(ILoggerFactory loggerFactory)
+        public EmailDispatcher(ILoggerFactory loggerFactory, ITemplateService templateService)
         {
             _logger = loggerFactory.CreateLogger<EmailDispatcher>();
+            _templateService = templateService;
         }
 
         [Function("EmailDispatcher")]
@@ -78,17 +82,35 @@ namespace PortfolioBackend
                     "
                 };
 
+                // Fetch Dynamic Auto-Reply Template
+                string clientHtmlContent;
+                var template = await _templateService.GetTemplateAsync("ClientAutoReply");
+                
+                if (template != null && !string.IsNullOrWhiteSpace(template.MarkdownBody))
+                {
+                    string rawMd = template.MarkdownBody
+                        .Replace("{{Name}}", submission.Name)
+                        .Replace("{{Subject}}", submission.Subject);
+                    
+                    clientHtmlContent = Markdown.ToHtml(rawMd);
+                }
+                else
+                {
+                    // Fallback if no template is defined in the database
+                    clientHtmlContent = $@"
+                        <p>Hi {submission.Name},</p>
+                        <p>This is an automated confirmation that your message regarding '{submission.Subject}' has been successfully received by my system. I will review your transmission and reach out to you shortly.</p>
+                        <p>Best regards,<br/>Oscar Calix<br/>System Architect | otdev.io</p>
+                    ";
+                }
+
                 // Payload 2: Client Auto-Reply
                 var clientPayload = new
                 {
                     from = "Oscar Calix <oscar@otdev.io>",
                     to = new[] { submission.Email },
                     subject = "Message Received - Oscar Calix",
-                    html = $@"
-                        <p>Hi {submission.Name},</p>
-                        <p>This is an automated confirmation that your message regarding '{submission.Subject}' has been successfully received by my system. I will review your transmission and reach out to you shortly.</p>
-                        <p>Best regards,<br/>Oscar Calix<br/>System Architect | otdev.io</p>
-                    "
+                    html = clientHtmlContent
                 };
 
                 var adminContent = new StringContent(JsonSerializer.Serialize(adminPayload), Encoding.UTF8, "application/json");

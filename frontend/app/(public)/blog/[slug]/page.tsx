@@ -1,12 +1,14 @@
-import { getBlogPostBySlug } from "@/src/lib/api"
+import { getBlogPostBySlug, getGlobalProfile } from "@/src/lib/api"
 import { notFound } from "next/navigation"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import remarkBreaks from "remark-breaks"
 import rehypeHighlight from "rehype-highlight"
 import { ArrowLeft, Calendar } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import ScrollReveal from "@/src/components/ScrollReveal"
+import { preserveMultipleNewlines } from "@/src/utils/markdownUtils"
 
 // Import highlight.js styles for code blocks
 import 'highlight.js/styles/atom-one-dark.css'
@@ -16,6 +18,7 @@ export const revalidate = 60
 export default async function BlogPostDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const post = await getBlogPostBySlug(resolvedParams.slug)
+  const profile = await getGlobalProfile()
 
   if (!post || !post.isPublished) {
     notFound()
@@ -58,13 +61,37 @@ export default async function BlogPostDetailPage({ params }: { params: Promise<{
       )}
 
       {/* Markdown Content */}
-      <ScrollReveal delay={0.3} className="prose dark:prose-invert prose-neutral max-w-none prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1">
+      <ScrollReveal delay={0.3} className="prose prose-lg dark:prose-invert prose-neutral max-w-none prose-p:leading-relaxed prose-p:mb-6 prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1">
         <ReactMarkdown 
-          remarkPlugins={[remarkGfm]} 
+          remarkPlugins={[remarkGfm, remarkBreaks]} 
           rehypePlugins={[rehypeHighlight]}
         >
-          {post.content}
+          {preserveMultipleNewlines(post.content)}
         </ReactMarkdown>
+      </ScrollReveal>
+
+      {/* Author Block */}
+      <ScrollReveal className="pt-12 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="flex items-center gap-4 bg-white dark:bg-[#111315] border border-neutral-200 dark:border-neutral-800 p-6">
+          {post.author?.avatarUrl || profile?.avatarUrl ? (
+            <img 
+              src={post.author?.avatarUrl || profile?.avatarUrl} 
+              alt={post.author?.name || profile?.name || 'Author'} 
+              className="w-16 h-16 rounded-full border border-neutral-200 dark:border-neutral-800 object-cover"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center font-mono text-neutral-500 text-xl font-bold">
+              {(post.author?.name?.[0] || profile?.name?.[0] || 'S').toUpperCase()}
+            </div>
+          )}
+          <div>
+            <h3 className="font-bold text-neutral-900 dark:text-neutral-100">{post.author?.name || profile?.name || 'System Administrator'}</h3>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">{profile?.authorTitle || profile?.headline || 'Content Author'}</p>
+            {profile?.authorBio && (
+              <p className="text-xs text-neutral-500 mt-1">{profile.authorBio}</p>
+            )}
+          </div>
+        </div>
       </ScrollReveal>
 
       {/* Footer Signature */}
