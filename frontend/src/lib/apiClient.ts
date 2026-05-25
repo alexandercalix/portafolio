@@ -27,12 +27,16 @@ export async function fetchWithRetry<T>(
     cache: 'no-store'
   };
 
+  // During GitHub Actions (CI) builds, Azure cold starts can take up to 30 seconds.
+  // A 10s timeout will abort the cold start before it finishes, causing the build to fail.
+  const actualTimeoutMs = process.env.CI ? 60000 : timeoutMs;
+
   let attempt = 0;
   let lastError: any = null;
 
   while (attempt <= retries) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const timeoutId = setTimeout(() => controller.abort(), actualTimeoutMs);
 
     try {
       const response = await fetch(url, {
