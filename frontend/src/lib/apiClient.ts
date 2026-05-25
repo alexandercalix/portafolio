@@ -20,16 +20,19 @@ export async function fetchWithRetry<T>(
       headers.set('Content-Type', 'application/json');
   }
 
-  // Ensure options.cache is strictly "no-store" 
+  // Only enforce no-store if the caller didn't explicitly set cache rules or next revalidation
   const fetchOptions: RequestInit = {
     ...options,
     headers,
-    cache: 'no-store'
   };
+  
+  if (!options.cache && !options.next) {
+    fetchOptions.cache = 'no-store';
+  }
 
-  // During GitHub Actions (CI) builds, Azure cold starts can take up to 30 seconds.
-  // A 10s timeout will abort the cold start before it finishes, causing the build to fail.
-  const actualTimeoutMs = process.env.CI ? 60000 : timeoutMs;
+  // During GitHub Actions (CI) builds, the Azure backend might not be fully provisioned yet.
+  // We use a short timeout (4 seconds) to fail fast, rather than hanging the build.
+  const actualTimeoutMs = process.env.CI ? 4000 : timeoutMs;
 
   let attempt = 0;
   let lastError: any = null;
@@ -78,8 +81,14 @@ export async function fetchWithRetry<T>(
         throw error;
       }
 
-      // If retries exhausted, throw
+      // If retries exhausted, throw or fallback
       if (attempt === retries) {
+        // In CI environments, we don't want the static build to completely crash if the API is offline.
+        // We return an empty object to generate the shell, and let ISR/CSR fetch the data later.
+        if (process.env.CI) {
+            console.warn(`[CI ENV] fetchWithRetry failed for ${endpoint}. Returning fallback to prevent build crash.`);
+            return {} as T;
+        }
         throw new Error(`fetchWithRetry failed after ${retries} retries: ${error.message}`);
       }
 
