@@ -1,6 +1,7 @@
 import Link from "next/link"
 import PublicHeader from "@/src/components/PublicHeader"
 import { getGlobalProfile } from "@/src/lib/api"
+import FeaturedSidebar from "@/src/components/FeaturedSidebar"
 
 export default async function PublicLayout({
   children,
@@ -17,14 +18,24 @@ export default async function PublicLayout({
       {/* Public Navbar */}
       <PublicHeader />
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-12">
-        {children}
-      </main>
+      {/* Layout Wrapper with Global Sidebar */}
+      <div className="flex-1 w-full max-w-[2000px] mx-auto flex flex-col xl:flex-row relative">
+        
+        {/* Main Content Area */}
+        <main className="flex-1 min-w-0 w-full px-6 py-12 flex justify-center">
+          <div className="w-full max-w-5xl">
+            {children}
+          </div>
+        </main>
+
+        {/* Global Right Sidebar */}
+        <FeaturedSidebar />
+        
+      </div>
 
       {/* Public Footer */}
       <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-[#0a0a0c] py-8 mt-auto">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="max-w-[2000px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-neutral-500 font-mono text-xs">
             © {currentYear} otdev.io // SYSTEM_ONLINE
           </div>

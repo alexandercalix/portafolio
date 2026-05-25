@@ -8,7 +8,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using otdev.Backend.Models;
 using otdev.Backend.Services.Domains;
-using Markdig;
 
 namespace PortfolioBackend
 {
@@ -88,11 +87,10 @@ namespace PortfolioBackend
                 
                 if (template != null && !string.IsNullOrWhiteSpace(template.MarkdownBody))
                 {
-                    string rawMd = template.MarkdownBody
+                    // Template.MarkdownBody now contains raw HTML from Tiptap Editor
+                    clientHtmlContent = template.MarkdownBody
                         .Replace("{{Name}}", submission.Name)
                         .Replace("{{Subject}}", submission.Subject);
-                    
-                    clientHtmlContent = Markdown.ToHtml(rawMd);
                 }
                 else
                 {

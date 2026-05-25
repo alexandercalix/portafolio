@@ -12,6 +12,7 @@ namespace otdev.Backend.Models
         public List<string> Technologies { get; set; } = new();
         public AuthorProfile? Author { get; set; }
         public bool? IsPublished { get; set; }
+        public bool? IsFeatured { get; set; }
         public System.DateTime? PublishedAt { get; set; }
     }
 }

@@ -107,6 +107,7 @@ namespace otdev.AzFunctionApp
                 CreatedAt = DateTime.UtcNow,
                 Images = new List<string>(),
                 IsPublished = requestData.IsPublished ?? false,
+                IsFeatured = requestData.IsFeatured ?? false,
                 PublishedAt = requestData.PublishedAt ?? ((requestData.IsPublished == true) ? DateTime.UtcNow : null)
             };
 
@@ -203,6 +204,7 @@ namespace otdev.AzFunctionApp
             }
 
             project.IsPublished = requestData.IsPublished ?? project.IsPublished;
+            project.IsFeatured = requestData.IsFeatured ?? project.IsFeatured;
 
             // Process image uploads concurrently if any files are attached.
             if (parsedForm.Files.Any())

@@ -19,6 +19,7 @@ export default function NewProjectPage() {
   const [githubUrl, setGithubUrl] = useState('')
   const [technologies, setTechnologies] = useState('')
   const [isPublished, setIsPublished] = useState(false)
+  const [isFeatured, setIsFeatured] = useState(false)
   
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [isSaving, setIsSaving] = useState(false)
@@ -68,7 +69,8 @@ export default function NewProjectPage() {
         liveUrl: liveUrl || undefined,
         repositoryUrl: githubUrl || undefined,
         technologies: techArray,
-        isPublished
+        isPublished,
+        isFeatured
       }))
 
       // Append binary payloads
@@ -111,23 +113,35 @@ export default function NewProjectPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-4 gap-8">
         
         {/* Left Column - Core Data */}
-        <div className="xl:col-span-2 space-y-6 bg-white dark:bg-[#111315] p-6 rounded-lg border border-neutral-200 dark:border-neutral-800">
+        <div className="xl:col-span-3 space-y-6 bg-white dark:bg-[#111315] p-6 rounded-lg border border-neutral-200 dark:border-neutral-800">
           <h2 className="text-lg font-mono text-neutral-600 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 pb-2 flex justify-between items-center">
             <span>&gt; CORE_PARAMETERS</span>
             {/* OT Toggle for Publish State */}
-            <label className="flex items-center cursor-pointer gap-3">
-              <span className={`font-mono text-xs uppercase ${isPublished ? 'text-[var(--color-terminal-green)]' : 'text-[var(--color-warning-amber)]'}`}>
-                {isPublished ? 'PUBLISHED' : 'DRAFT'}
-              </span>
-              <div className="relative">
-                <input type="checkbox" className="sr-only" checked={isPublished} onChange={() => setIsPublished(!isPublished)} />
-                <div className={`block w-12 h-6 rounded-full transition-colors ${isPublished ? 'bg-[var(--color-terminal-green)]/20 border border-[var(--color-terminal-green)]' : 'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700'}`}></div>
-                <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isPublished ? 'transform translate-x-6 bg-[var(--color-terminal-green)]' : 'bg-neutral-500'}`}></div>
-              </div>
-            </label>
+            <div className="flex items-center">
+              <label className="flex items-center cursor-pointer gap-3">
+                <span className={`font-mono text-xs uppercase ${isPublished ? 'text-[var(--color-terminal-green)]' : 'text-[var(--color-warning-amber)]'}`}>
+                  {isPublished ? 'PUBLISHED' : 'DRAFT'}
+                </span>
+                <div className="relative">
+                  <input type="checkbox" className="sr-only" checked={isPublished} onChange={() => setIsPublished(!isPublished)} />
+                  <div className={`block w-12 h-6 rounded-full transition-colors ${isPublished ? 'bg-[var(--color-terminal-green)]/20 border border-[var(--color-terminal-green)]' : 'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700'}`}></div>
+                  <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isPublished ? 'transform translate-x-6 bg-[var(--color-terminal-green)]' : 'bg-neutral-500'}`}></div>
+                </div>
+              </label>
+              <label className="flex items-center cursor-pointer gap-3 ml-6 border-l border-neutral-200 dark:border-neutral-800 pl-6">
+                <span className={`font-mono text-xs uppercase ${isFeatured ? 'text-[var(--color-terminal-green)]' : 'text-neutral-500'}`}>
+                  {isFeatured ? 'FEATURED' : 'STANDARD'}
+                </span>
+                <div className="relative">
+                  <input type="checkbox" className="sr-only" checked={isFeatured} onChange={() => setIsFeatured(!isFeatured)} />
+                  <div className={`block w-12 h-6 rounded-full transition-colors ${isFeatured ? 'bg-[var(--color-terminal-green)]/20 border border-[var(--color-terminal-green)]' : 'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700'}`}></div>
+                  <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isFeatured ? 'transform translate-x-6 bg-[var(--color-terminal-green)]' : 'bg-neutral-500'}`}></div>
+                </div>
+              </label>
+            </div>
           </h2>
           
           <div className="space-y-2">

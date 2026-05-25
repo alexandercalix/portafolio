@@ -8,7 +8,14 @@ import { SiteProfile } from "../models/types"
 import { useState, useEffect } from "react"
 import BootSplash from "./BootSplash"
 
-export default function HomeClient({ profile }: { profile: SiteProfile }) {
+import { NormalizedContent } from "../types/content"
+import { format } from "date-fns"
+
+export default function HomeClient({ 
+  profile 
+}: { 
+  profile: SiteProfile 
+}) {
   const [splashMode, setSplashMode] = useState<'LOADING' | 'FULL' | 'MICRO' | 'NONE'>('LOADING')
 
   useEffect(() => {

@@ -58,6 +58,9 @@ namespace otdev.Backend.Models
         [BsonElement("isPublished")]
         public bool IsPublished { get; set; } = false;
 
+        [BsonElement("isFeatured")]
+        public bool IsFeatured { get; set; } = false;
+
         [BsonElement("publishedAt")]
         public System.DateTime? PublishedAt { get; set; }
     }

@@ -1,14 +1,11 @@
-import { getBlogPostBySlug, getGlobalProfile } from "@/src/lib/api"
+import { getBlogPostBySlug } from "@/src/lib/api/blog"
+import { getBlogPosts } from "@/src/lib/api/blog"
+import { getGlobalProfile } from "@/src/lib/api/profile"
 import { notFound } from "next/navigation"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import remarkBreaks from "remark-breaks"
-import rehypeHighlight from "rehype-highlight"
 import { ArrowLeft, Calendar } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import ScrollReveal from "@/src/components/ScrollReveal"
-import { preserveMultipleNewlines } from "@/src/utils/markdownUtils"
 
 // Import highlight.js styles for code blocks
 import 'highlight.js/styles/atom-one-dark.css'
@@ -25,7 +22,7 @@ export default async function BlogPostDetailPage({ params }: { params: Promise<{
   }
 
   return (
-    <article className="max-w-3xl mx-auto space-y-12 pb-24">
+    <article className="space-y-12 pb-24">
       {/* Header */}
       <ScrollReveal className="space-y-8">
         <Link href="/blog" className="inline-flex items-center gap-2 text-neutral-500 hover:text-[var(--color-terminal-green)] transition-colors font-mono text-xs">
@@ -56,18 +53,16 @@ export default async function BlogPostDetailPage({ params }: { params: Promise<{
       {/* Main Cover Image */}
       {post.thumbnailUrl && (
         <ScrollReveal delay={0.2} className="w-full aspect-video border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#111315]">
-          <img src={post.thumbnailUrl} alt={post.title} className="w-full h-full object-cover" />
+          <img src={post.thumbnailUrl} alt={post.title} className="w-full h-full object-contain" />
         </ScrollReveal>
       )}
 
-      {/* Markdown Content */}
-      <ScrollReveal delay={0.3} className="prose prose-lg dark:prose-invert prose-neutral max-w-none prose-p:leading-relaxed prose-p:mb-6 prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1">
-        <ReactMarkdown 
-          remarkPlugins={[remarkGfm, remarkBreaks]} 
-          rehypePlugins={[rehypeHighlight]}
-        >
-          {preserveMultipleNewlines(post.content)}
-        </ReactMarkdown>
+      {/* HTML Content */}
+      <ScrollReveal delay={0.3}>
+        <div 
+          className="prose prose-lg dark:prose-invert prose-neutral max-w-none prose-p:leading-relaxed prose-p:mb-6 prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1"
+          dangerouslySetInnerHTML={{ __html: post.content || '' }}
+        />
       </ScrollReveal>
 
       {/* Author Block */}
@@ -99,6 +94,6 @@ export default async function BlogPostDetailPage({ params }: { params: Promise<{
         <span className="font-mono text-xs text-neutral-500">END_OF_TRANSMISSION</span>
         <span className="w-2 h-2 rounded-full bg-[var(--color-terminal-green)] animate-pulse"></span>
       </ScrollReveal>
-    </article>
+      </article>
   )
 }

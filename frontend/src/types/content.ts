@@ -8,6 +8,7 @@ export interface NormalizedContent {
     thumbnailUrl?: string;
     publishedAt: string;
     tags: string[];
+    isFeatured: boolean;
     type: 'blog' | 'project';
 }
 
@@ -20,6 +21,7 @@ export function normalizeBlogPosts(posts: BlogPost[]): NormalizedContent[] {
         thumbnailUrl: post.thumbnailUrl,
         publishedAt: post.publishedAt || post.createdAt,
         tags: (post.tags || []).map(t => t.toLowerCase()),
+        isFeatured: post.isFeatured || false,
         type: 'blog'
     }));
 }
@@ -35,6 +37,7 @@ export function normalizeProjects(projects: Project[]): NormalizedContent[] {
             thumbnailUrl: project.thumbnailUrl,
             publishedAt: project.publishedAt || project.createdAt,
             tags: rawTags.map(t => t.toLowerCase()),
+            isFeatured: project.isFeatured || false,
             type: 'project'
         };
     });

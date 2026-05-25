@@ -17,7 +17,12 @@ export const dynamic = 'force-static'
 export const revalidate = false
 
 const baseUrl = 'https://otdev.io'
-const apiUrl = 'https://api.otdev.io/api'
+let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.otdev.io/api'
+
+// Fix Node.js 18+ IPv6 resolution issue with Azure Functions
+if (apiUrl.includes('localhost')) {
+  apiUrl = apiUrl.replace('localhost', '127.0.0.1')
+}
 
 function safeDate(value?: string | null): Date {
   if (!value) return new Date()

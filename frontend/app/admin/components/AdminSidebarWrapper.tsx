@@ -64,7 +64,7 @@ export default function AdminSidebarWrapper({ children }: { children: React.Reac
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto w-full">
-        <div className="p-4 md:p-8 max-w-6xl mx-auto">
+        <div className="p-4 md:p-8 max-w-[2000px] mx-auto w-full">
           {children}
         </div>
       </main>

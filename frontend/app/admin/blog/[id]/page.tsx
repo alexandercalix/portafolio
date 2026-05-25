@@ -18,6 +18,7 @@ export default function EditBlogPostEditor({ params }: { params: Promise<{ id: s
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
   const [isPublished, setIsPublished] = useState(false)
+  const [isFeatured, setIsFeatured] = useState(false)
   const [existingThumbnailUrl, setExistingThumbnailUrl] = useState<string | null>(null)
   
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
@@ -47,6 +48,7 @@ export default function EditBlogPostEditor({ params }: { params: Promise<{ id: s
           setContent(post.content || '')
           setTags(post.tags ? post.tags.join(', ') : '')
           setIsPublished(post.isPublished)
+          setIsFeatured(post.isFeatured || false)
           setExistingThumbnailUrl(post.thumbnailUrl || null)
           addLog('info', 'Blog post data loaded successfully.')
         } else {
@@ -89,6 +91,7 @@ export default function EditBlogPostEditor({ params }: { params: Promise<{ id: s
         content,
         tags: tagsArray,
         isPublished,
+        isFeatured,
         thumbnailUrl: existingThumbnailUrl // preserve if not replaced
       }))
 
@@ -142,16 +145,28 @@ export default function EditBlogPostEditor({ params }: { params: Promise<{ id: s
         <div className="xl:col-span-3 space-y-6 bg-white dark:bg-[#111315] p-6 rounded-lg border border-neutral-200 dark:border-neutral-800 flex flex-col min-h-[70vh]">
           <h2 className="text-lg font-mono text-neutral-600 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 pb-2 flex justify-between items-center">
             <span>&gt; CORE_PARAMETERS</span>
-            <label className="flex items-center cursor-pointer gap-3">
-              <span className={`font-mono text-xs uppercase ${isPublished ? 'text-[var(--color-terminal-green)]' : 'text-[var(--color-warning-amber)]'}`}>
-                {isPublished ? 'PUBLISHED' : 'DRAFT'}
-              </span>
-              <div className="relative">
-                <input type="checkbox" className="sr-only" checked={isPublished} onChange={() => setIsPublished(!isPublished)} />
-                <div className={`block w-12 h-6 rounded-full transition-colors ${isPublished ? 'bg-[var(--color-terminal-green)]/20 border border-[var(--color-terminal-green)]' : 'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700'}`}></div>
-                <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isPublished ? 'transform translate-x-6 bg-[var(--color-terminal-green)]' : 'bg-neutral-500'}`}></div>
-              </div>
-            </label>
+            <div className="flex items-center">
+              <label className="flex items-center cursor-pointer gap-3">
+                <span className={`font-mono text-xs uppercase ${isPublished ? 'text-[var(--color-terminal-green)]' : 'text-[var(--color-warning-amber)]'}`}>
+                  {isPublished ? 'PUBLISHED' : 'DRAFT'}
+                </span>
+                <div className="relative">
+                  <input type="checkbox" className="sr-only" checked={isPublished} onChange={() => setIsPublished(!isPublished)} />
+                  <div className={`block w-12 h-6 rounded-full transition-colors ${isPublished ? 'bg-[var(--color-terminal-green)]/20 border border-[var(--color-terminal-green)]' : 'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700'}`}></div>
+                  <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isPublished ? 'transform translate-x-6 bg-[var(--color-terminal-green)]' : 'bg-neutral-500'}`}></div>
+                </div>
+              </label>
+              <label className="flex items-center cursor-pointer gap-3 ml-6 border-l border-neutral-200 dark:border-neutral-800 pl-6">
+                <span className={`font-mono text-xs uppercase ${isFeatured ? 'text-[var(--color-terminal-green)]' : 'text-neutral-500'}`}>
+                  {isFeatured ? 'FEATURED' : 'STANDARD'}
+                </span>
+                <div className="relative">
+                  <input type="checkbox" className="sr-only" checked={isFeatured} onChange={() => setIsFeatured(!isFeatured)} />
+                  <div className={`block w-12 h-6 rounded-full transition-colors ${isFeatured ? 'bg-[var(--color-terminal-green)]/20 border border-[var(--color-terminal-green)]' : 'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700'}`}></div>
+                  <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isFeatured ? 'transform translate-x-6 bg-[var(--color-terminal-green)]' : 'bg-neutral-500'}`}></div>
+                </div>
+              </label>
+            </div>
           </h2>
           
           <div className="space-y-2">

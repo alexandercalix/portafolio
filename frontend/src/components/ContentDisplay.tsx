@@ -122,7 +122,7 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
                       <img 
                         src={item.thumbnailUrl} 
                         alt={item.title}
-                        className="w-full h-full object-cover filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500"
+                        className="w-full h-full object-contain filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center font-mono text-[10px] text-neutral-500 bg-neutral-200 dark:bg-[#0a0a0c] border border-neutral-300 dark:border-neutral-800/50 text-center p-4">

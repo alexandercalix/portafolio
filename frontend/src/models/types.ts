@@ -72,6 +72,7 @@ export interface Project {
         avatarUrl?: string;
     };
     isPublished: boolean;
+    isFeatured: boolean;
     publishedAt?: string;
     createdAt: string;
     updatedAt?: string;
@@ -92,6 +93,7 @@ export interface BlogPost {
         avatarUrl?: string;
     };
     isPublished: boolean;
+    isFeatured: boolean;
     publishedAt?: string;
     createdAt: string;
     updatedAt?: string;

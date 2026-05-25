@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -76,4 +77,24 @@ body {
   .animate-bracket-boot {
     animation: bracketBoot 0.4s ease-out forwards;
   }
+}
+
+/* MDXEditor Custom Overrides */
+.custom-mdx-editor {
+  --baseBase: #111315 !important;
+  --baseControl: #1a1d21 !important;
+  --baseDivider: #333333 !important;
+  --baseIcon: #e2e8f0 !important;
+  --accentBase: var(--color-terminal-green) !important;
+  --accentText: #000000 !important;
+}
+
+.custom-mdx-editor .mdxeditor-toolbar {
+  font-family: var(--font-mono);
+}
+
+.custom-mdx-editor [data-lexical-editor] {
+  background-color: #0a0a0c;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
 }

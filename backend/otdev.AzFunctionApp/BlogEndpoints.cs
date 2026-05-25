@@ -105,6 +105,7 @@ namespace otdev.AzFunctionApp
                 Slug = GenerateSlug(requestData.Title),
                 CreatedAt = DateTime.UtcNow,
                 IsPublished = requestData.IsPublished ?? false,
+                IsFeatured = requestData.IsFeatured ?? false,
                 PublishedAt = requestData.PublishedAt ?? ((requestData.IsPublished == true) ? DateTime.UtcNow : null)
             };
 
@@ -203,6 +204,7 @@ namespace otdev.AzFunctionApp
             }
 
             post.IsPublished = requestData.IsPublished ?? post.IsPublished;
+            post.IsFeatured = requestData.IsFeatured ?? post.IsFeatured;
 
             // Process image uploads concurrently if any files are attached.
             var uploadedImageUrls = new List<string>();

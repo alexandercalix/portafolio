@@ -1,12 +1,10 @@
-import { getProjectBySlug, getGlobalProfile } from "@/src/lib/api"
+import { getProjectBySlug } from "@/src/lib/api/project"
+import { getProjects } from "@/src/lib/api/project"
+import { getGlobalProfile } from "@/src/lib/api/profile"
 import { notFound } from "next/navigation"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import remarkBreaks from "remark-breaks"
-import rehypeHighlight from "rehype-highlight"
 import { ExternalLink, GitBranch, ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { preserveMultipleNewlines } from "@/src/utils/markdownUtils"
+
 
 // Import highlight.js styles for code blocks
 import 'highlight.js/styles/atom-one-dark.css'
@@ -23,7 +21,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <article className="max-w-4xl mx-auto space-y-12 pb-24">
+    <article className="space-y-12 pb-24">
       {/* Header */}
       <div className="space-y-8">
         <Link href="/projects" className="inline-flex items-center gap-2 text-neutral-500 hover:text-[var(--color-terminal-green)] transition-colors font-mono text-xs">
@@ -75,19 +73,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       {/* Main Cover Image */}
       {project.thumbnailUrl && (
         <div className="w-full aspect-video border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#111315]">
-          <img src={project.thumbnailUrl} alt={project.title} className="w-full h-full object-cover" />
+          <img src={project.thumbnailUrl} alt={project.title} className="w-full h-full object-contain" />
         </div>
       )}
 
-      {/* Markdown Content */}
-      <div className="prose prose-lg dark:prose-invert prose-neutral max-w-none prose-p:leading-relaxed prose-p:mb-6 prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1">
-        <ReactMarkdown 
-          remarkPlugins={[remarkGfm, remarkBreaks]} 
-          rehypePlugins={[rehypeHighlight]}
-        >
-          {preserveMultipleNewlines(project.description)}
-        </ReactMarkdown>
-      </div>
+      {/* HTML Content */}
+      <div 
+        className="prose prose-lg dark:prose-invert prose-neutral max-w-none prose-p:leading-relaxed prose-p:mb-6 prose-headings:font-mono prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[var(--color-terminal-green)] hover:prose-a:text-green-400 prose-img:border prose-img:border-neutral-200 dark:prose-img:border-neutral-800 prose-pre:bg-neutral-900 dark:prose-pre:bg-[#0a0a0c] prose-pre:border prose-pre:border-neutral-200 dark:prose-pre:border-neutral-800 prose-pre:rounded prose-pre:overflow-x-auto prose-code:bg-neutral-100 dark:prose-code:bg-[#1a1d21] prose-code:text-[var(--color-terminal-green)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:my-1"
+        dangerouslySetInnerHTML={{ __html: project.description || '' }}
+      />
 
       {/* Author Block */}
       <div className="pt-12 border-t border-neutral-200 dark:border-neutral-800">
@@ -120,12 +114,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {project.images.filter(url => url !== project.thumbnailUrl).map((url, idx) => (
               <div key={idx} className="aspect-video border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#111315]">
-                <img src={url} alt={`Asset ${idx}`} className="w-full h-full object-cover" />
+                <img src={url} alt={`Asset ${idx}`} className="w-full h-full object-contain" />
               </div>
             ))}
           </div>
         </div>
       )}
-    </article>
+      </article>
   )
 }

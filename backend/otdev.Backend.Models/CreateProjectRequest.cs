@@ -13,6 +13,7 @@ namespace otdev.Backend.Models
         public List<string>? Tags { get; set; }
         public AuthorProfile? Author { get; set; }
         public bool? IsPublished { get; set; }
+        public bool? IsFeatured { get; set; }
         public System.DateTime? PublishedAt { get; set; }
     }
 }

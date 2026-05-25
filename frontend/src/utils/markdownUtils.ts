@@ -12,6 +12,8 @@ export function generateCleanExcerpt(markdown: string, maxLength: number = 120):
         .replace(/(\*\*|\*|__|_)(.*?)\1/g, '$2')
         // Remove blockquotes, lists, etc. if desired (optional, but good for plain text)
         .replace(/>\s/g, '')
+        // Remove HTML tags (since we migrated to Tiptap)
+        .replace(/<[^>]*>?/gm, '')
         // Replace multiple newlines/spaces with a single space
         .replace(/\s+/g, ' ')
         .trim();
