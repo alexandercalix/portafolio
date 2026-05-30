@@ -38,9 +38,15 @@ export default async function FeaturedSidebar() {
                 >
                   <div className="aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-[#1a1d21] relative border-b border-neutral-200 dark:border-neutral-800">
                     {p.thumbnailUrl ? (
-                      <img src={p.thumbnailUrl} alt={p.title} className="w-full h-full object-contain filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500" />
+                      <img 
+                        src={p.thumbnailUrl} 
+                        alt={p.title} 
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-contain filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500" 
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center font-mono text-[10px] text-neutral-500">NO_PREVIEW</div>
+                      <div className="w-full h-full flex items-center justify-center font-mono text-[10px] text-neutral-600 dark:text-neutral-400">NO_PREVIEW</div>
                     )}
                   </div>
                   <div className="p-4 flex flex-col flex-1">
@@ -67,9 +73,15 @@ export default async function FeaturedSidebar() {
                 >
                   <div className="aspect-video w-full overflow-hidden bg-neutral-100 dark:bg-[#1a1d21] relative border-b border-neutral-200 dark:border-neutral-800">
                     {b.thumbnailUrl ? (
-                      <img src={b.thumbnailUrl} alt={b.title} className="w-full h-full object-contain filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500" />
+                      <img 
+                        src={b.thumbnailUrl} 
+                        alt={b.title} 
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-contain filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500" 
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center font-mono text-[10px] text-neutral-500">NO_PREVIEW</div>
+                      <div className="w-full h-full flex items-center justify-center font-mono text-[10px] text-neutral-600 dark:text-neutral-400">NO_PREVIEW</div>
                     )}
                   </div>
                   <div className="p-4 flex flex-col flex-1">

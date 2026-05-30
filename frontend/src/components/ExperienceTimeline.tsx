@@ -113,7 +113,7 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
                       <div className="bg-white dark:bg-[#111315] border border-neutral-200 dark:border-neutral-800 p-5 transition-all group-hover:-translate-y-[2px] group-hover:border-[var(--color-terminal-green)] group-hover:shadow-[0_4px_20px_rgba(0,255,65,0.05)]">
                         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-3">
                           <h4 className="text-lg font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-[var(--color-terminal-green)] transition-colors">{role.jobTitle}</h4>
-                          <span className="font-mono text-xs text-neutral-500 whitespace-nowrap">
+                          <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
                             [ {format(new Date(role.startDate), 'yyyy.MM')} - {role.isCurrent ? 'PRESENT' : (role.endDate ? format(new Date(role.endDate), 'yyyy.MM') : 'UNKNOWN')} ]
                           </span>
                         </div>
@@ -128,12 +128,12 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
                         <div className="flex items-center gap-2 mt-4">
                           <span className="font-mono text-xs text-[var(--color-terminal-green)] hidden md:inline-block mr-2 opacity-0 group-hover:opacity-100 transition-opacity">VIEW_PAYLOAD</span>
                           {role.technologies?.slice(0, 3).map((tech, idx) => (
-                            <span key={idx} className="font-mono text-[10px] px-1.5 py-0.5 bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 text-neutral-500">
+                            <span key={idx} className="font-mono text-[10px] px-1.5 py-0.5 bg-neutral-100 dark:bg-[#1a1d21] border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400">
                               {tech}
                             </span>
                           ))}
                           {role.technologies && role.technologies.length > 3 && (
-                            <span className="font-mono text-[10px] px-1.5 py-0.5 text-neutral-500">+{role.technologies.length - 3}</span>
+                            <span className="font-mono text-[10px] px-1.5 py-0.5 text-neutral-600 dark:text-neutral-400">+{role.technologies.length - 3}</span>
                           )}
                         </div>
                       </div>
@@ -176,15 +176,15 @@ export default function ExperienceTimeline({ experiences, educations }: Experien
                   className="bg-white dark:bg-[#111315] border border-neutral-200 dark:border-neutral-800 p-5 transition-all group-hover:-translate-y-[2px] group-hover:border-[var(--color-terminal-green)] group-hover:shadow-[0_4px_20px_rgba(0,255,65,0.05)]"
                 >
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2 mb-2">
-                    <h4 className="text-lg font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-[var(--color-terminal-green)] transition-colors">{edu.degreeOrCertificate}</h4>
-                    <span className="font-mono text-xs text-neutral-500 whitespace-nowrap">
+                    <h3 className="text-lg font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-[var(--color-terminal-green)] transition-colors">{edu.degreeOrCertificate}</h3>
+                    <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
                       [ {format(new Date(edu.dateObtained), 'yyyy.MM')} ]
                     </span>
                   </div>
                   <p className="font-mono text-[var(--color-terminal-green)] text-sm mb-3">{edu.institution}</p>
                   
                   {edu.focusLine && (
-                    <p className="font-mono text-xs text-neutral-500 mb-4">
+                    <p className="font-mono text-xs text-neutral-600 dark:text-neutral-400 mb-4">
                       {edu.focusLine}
                     </p>
                   )}

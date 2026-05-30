@@ -4,6 +4,7 @@ import ContentControls from "@/src/components/ContentControls"
 import ContentDisplay from "@/src/components/ContentDisplay"
 import AnimatedPageHeader from "@/src/components/AnimatedPageHeader"
 import { normalizeProjects } from "@/src/types/content"
+import AnalyticsTracker from "@/src/components/AnalyticsTracker"
 
 export const revalidate = 60
 
@@ -23,6 +24,7 @@ export default async function PublicProjectsPage(props: { searchParams: SearchPa
 
   return (
     <div className="space-y-12 max-w-5xl mx-auto">
+      <AnalyticsTracker action="projects_index_viewed" category="Engagement" label="Projects List" />
       <AnimatedPageHeader 
         title={<><FolderGit2 className="w-10 h-10 text-[var(--color-terminal-green)]" /> Projects</>}
         subtitle="A registry of completed systems, architectural blueprints, and full-stack deployments."

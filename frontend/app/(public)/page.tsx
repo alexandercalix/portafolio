@@ -1,9 +1,15 @@
 import { getGlobalProfile } from "@/src/lib/api"
 import HomeClient from "@/src/components/HomeClient"
+import Script from "next/script"
 
 // This page is a Server Component and will be rendered on the server/edge.
 // Revalidation can be configured in the fetch utility or here.
 export const revalidate = 60; // Revalidate every 60 seconds
+
+export const metadata = {
+  title: 'Oscar Calix | System Architecture and Portfolio',
+  description: 'Oscar Calix - System Architecture and Portfolio. A registry of completed systems, architectural blueprints, and full-stack deployments.',
+};
 
 export default async function HomePage() {
   const profile = await getGlobalProfile().catch(() => null)
@@ -19,5 +25,24 @@ export default async function HomePage() {
     )
   }
 
-  return <HomeClient profile={profile} />
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.name,
+    jobTitle: profile.headline || profile.authorTitle,
+    url: 'https://otdev.io',
+    sameAs: [
+      profile.linkedInUrl,
+      profile.githubUrl,
+    ].filter(Boolean),
+    description: profile.bio,
+    image: profile.avatarUrl,
+  }
+
+  return (
+    <>
+      <Script id="json-ld-person" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <HomeClient profile={profile} />
+    </>
+  )
 }

@@ -15,13 +15,18 @@ interface ContentDisplayProps {
 
 export default function ContentDisplay({ items, searchParams }: ContentDisplayProps) {
   const currentView = searchParams.view === 'list' ? 'list' : 'grid'
-  const currentTag = typeof searchParams.tag === 'string' ? searchParams.tag : null
+  
+  const selectedTags = searchParams.tag 
+    ? (Array.isArray(searchParams.tag) ? searchParams.tag : [searchParams.tag])
+    : []
 
-  // 1. Filter by tag
+  // 1. Filter by tag (OR logic - item has any of the selected tags)
   let filteredItems = items
-  if (currentTag) {
+  if (selectedTags.length > 0) {
     filteredItems = filteredItems.filter(item => 
-      item.tags.some(tag => tag.toLowerCase() === currentTag.toLowerCase())
+      selectedTags.some(selectedTag => 
+        item.tags.some(itemTag => itemTag.toLowerCase() === selectedTag.toLowerCase())
+      )
     )
   }
 
@@ -49,7 +54,7 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
         className="text-center py-24 border border-dashed border-neutral-200 dark:border-neutral-800"
       >
-        <span className="font-mono text-neutral-500">NO_RECORDS_MATCH_CRITERIA</span>
+        <span className="font-mono text-neutral-600 dark:text-neutral-400">NO_RECORDS_MATCH_CRITERIA</span>
       </motion.div>
     )
   }
@@ -58,7 +63,7 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
     <AnimatePresence mode="wait">
       {currentView === 'list' ? (
         <motion.div 
-          key={`list-${currentTag || 'all'}`}
+          key={`list-${selectedTags.join('-') || 'all'}`}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -78,12 +83,12 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
                       {item.title}
                     </h2>
                     <div className="flex items-center gap-4 mt-2">
-                      <span className="flex items-center gap-1 font-mono text-[10px] text-neutral-500">
+                      <span className="flex items-center gap-1 font-mono text-[10px] text-neutral-600 dark:text-neutral-400">
                         <Calendar className="w-3 h-3" />
                         {format(new Date(item.publishedAt), "yyyy.MM.dd")}
                       </span>
                       {item.tags.length > 0 && (
-                        <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-500 truncate uppercase">
+                        <span className="flex items-center gap-2 font-mono text-[10px] text-neutral-600 dark:text-neutral-400 truncate uppercase">
                           <Tag className="w-3 h-3" />
                           {item.tags.slice(0, 3).map(t => t.replace(/^#+/, '')).join(' • ')}
                           {item.tags.length > 3 ? ' • ...' : ''}
@@ -101,7 +106,7 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
         </motion.div>
       ) : (
         <motion.div 
-          key={`grid-${currentTag || 'all'}`}
+          key={`grid-${selectedTags.join('-') || 'all'}`}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -122,10 +127,12 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
                       <img 
                         src={item.thumbnailUrl} 
                         alt={item.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-contain filter grayscale group-hover:grayscale-[0.2] group-hover:brightness-110 transition-all duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center font-mono text-[10px] text-neutral-500 bg-neutral-200 dark:bg-[#0a0a0c] border border-neutral-300 dark:border-neutral-800/50 text-center p-4">
+                      <div className="w-full h-full flex flex-col items-center justify-center font-mono text-[10px] text-neutral-600 dark:text-neutral-400 bg-neutral-200 dark:bg-[#0a0a0c] border border-neutral-300 dark:border-neutral-800/50 text-center p-4">
                         <span className="text-[var(--color-terminal-green)]/70 mb-2">[{item.type === 'project' ? 'PROJECT' : 'TRANSMISSION'}]</span>
                         {item.type === 'project' ? 'MODULE_PREVIEW_PENDING' : 'TRANSMISSION_PREVIEW_PENDING'}
                       </div>
@@ -138,7 +145,7 @@ export default function ContentDisplay({ items, searchParams }: ContentDisplayPr
                       <span className="font-mono text-[10px] text-[var(--color-terminal-green)]">
                         {format(new Date(item.publishedAt), "yyyy.MM.dd")}
                       </span>
-                      <span className="font-mono text-[10px] text-neutral-500 uppercase">
+                      <span className="font-mono text-[10px] text-neutral-600 dark:text-neutral-400 uppercase">
                         {item.type === 'blog' ? 'LOG' : 'MODULE'}
                       </span>
                     </div>

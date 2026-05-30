@@ -4,12 +4,33 @@ import { getGlobalProfile } from "@/src/lib/api/profile"
 import { notFound } from "next/navigation"
 import { ExternalLink, GitBranch, ArrowLeft } from "lucide-react"
 import Link from "next/link"
-
+import AnalyticsTracker from "@/src/components/AnalyticsTracker"
 
 // Import highlight.js styles for code blocks
 import 'highlight.js/styles/atom-one-dark.css'
+import type { Metadata } from 'next'
 
 export const revalidate = 60
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
+  const project = await getProjectBySlug(resolvedParams.slug).catch(() => null)
+  
+  if (!project) return {}
+
+  const desc = project.description ? project.description.replace(/<[^>]*>?/gm, '').substring(0, 160) : project.title
+
+  return {
+    title: `${project.title} | Projects | Oscar Calix`,
+    description: desc,
+    keywords: project.technologies || [],
+    openGraph: {
+      title: project.title,
+      description: desc,
+      images: project.thumbnailUrl ? [{ url: project.thumbnailUrl }] : [],
+    }
+  }
+}
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -22,6 +43,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <article className="space-y-12 pb-24">
+      <AnalyticsTracker action="project_viewed" category="Engagement" label={project.title} />
       {/* Header */}
       <div className="space-y-8">
         <Link href="/projects" className="inline-flex items-center gap-2 text-neutral-500 hover:text-[var(--color-terminal-green)] transition-colors font-mono text-xs">

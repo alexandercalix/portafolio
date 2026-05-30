@@ -3,6 +3,7 @@ import ContentControls from "@/src/components/ContentControls"
 import ContentDisplay from "@/src/components/ContentDisplay"
 import AnimatedPageHeader from "@/src/components/AnimatedPageHeader"
 import { normalizeBlogPosts } from "@/src/types/content"
+import AnalyticsTracker from "@/src/components/AnalyticsTracker"
 
 export const revalidate = 60
 
@@ -22,6 +23,7 @@ export default async function PublicBlogPage(props: { searchParams: SearchParams
 
   return (
     <div className="space-y-12 max-w-5xl mx-auto">
+      <AnalyticsTracker action="blog_index_viewed" category="Engagement" label="Blog List" />
       <AnimatedPageHeader 
         title="Transmission Logs"
         subtitle="Technical dispatches covering system architecture, C# .NET performance, and full-stack engineering."

@@ -92,23 +92,24 @@ export default function HomeClient({
     visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } }
   }
 
-  if (splashMode === 'LOADING') {
-    return <div className="min-h-[70vh] bg-[var(--background)]"></div>
-  }
+  const heroAnimate = splashMode === 'NONE' ? 'visible' : 'hidden';
 
   return (
     <>
+      {splashMode === 'LOADING' && (
+        <div className="fixed inset-0 z-[60] bg-[var(--background)]"></div>
+      )}
+
       {(splashMode === 'FULL' || splashMode === 'MICRO') && (
         <BootSplash mode={splashMode} onComplete={() => setSplashMode('NONE')} />
       )}
 
-      {splashMode === 'NONE' && (
-        <div className="flex flex-col items-start justify-center min-h-[70vh] max-w-4xl space-y-12">
-          
-          <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 w-full">
+      <div className="flex flex-col items-start justify-center min-h-[70vh] max-w-4xl space-y-12">
+        
+        <div className="flex flex-col md:flex-row items-start gap-8 md:gap-12 w-full">
         {/* Geometric Avatar */}
         <motion.div 
-          initial="hidden" animate="visible" variants={imgVariant} 
+          initial="hidden" animate={heroAnimate} variants={imgVariant} 
           className="shrink-0 p-2 border-2 border-neutral-200 dark:border-neutral-800 relative group"
         >
           {/* Corner Accents (Animated) */}
@@ -121,7 +122,9 @@ export default function HomeClient({
           
           <img 
             src={profile.avatarUrl || '/placeholder.png'} 
-            alt={profile.name} 
+            alt="System Operator Avatar" 
+            fetchPriority="high"
+            loading="eager"
             className="w-48 h-48 md:w-64 md:h-64 object-cover filter grayscale hover:grayscale-0 transition-all duration-500"
           />
         </motion.div>
@@ -129,26 +132,26 @@ export default function HomeClient({
         {/* Hero Copy */}
         <div className="flex flex-col space-y-6 flex-1 pt-2">
           <div>
-            <motion.h1 initial="hidden" animate="visible" variants={nameVariant} className="text-6xl md:text-[5.5rem] font-bold tracking-tighter text-neutral-900 dark:text-neutral-100 uppercase leading-none">
+            <motion.h1 initial="hidden" animate={heroAnimate} variants={nameVariant} className="text-6xl md:text-[5.5rem] font-bold tracking-tighter text-neutral-900 dark:text-neutral-100 uppercase leading-none">
               {profile.name}
             </motion.h1>
-            <motion.h2 initial="hidden" animate="visible" variants={sysLoadedVariant} className="text-lg md:text-xl font-mono text-[var(--color-terminal-green)] mt-4 flex items-center">
+            <motion.h2 initial="hidden" animate={heroAnimate} variants={sysLoadedVariant} className="text-lg md:text-xl font-mono text-[var(--color-terminal-green)] mt-4 flex items-center">
               &gt; SYSTEM_PROFILE_LOADED<span className="animate-cursor-blink ml-1">|</span>
             </motion.h2>
           </div>
 
           <div className="space-y-4">
-            <motion.div initial="hidden" animate="visible" variants={bioVariant} className="text-neutral-700 dark:text-neutral-300 font-sans text-base leading-relaxed whitespace-pre-line max-w-2xl">
+            <motion.div initial="hidden" animate={heroAnimate} variants={bioVariant} className="text-neutral-700 dark:text-neutral-300 font-sans text-base leading-relaxed whitespace-pre-line max-w-2xl">
               {profile.bio}
             </motion.div>
             {profile.currentFocus && (
-              <motion.div initial="hidden" animate="visible" variants={focusVariant} className="text-neutral-500 font-mono text-sm">
+              <motion.div initial="hidden" animate={heroAnimate} variants={focusVariant} className="text-neutral-600 dark:text-neutral-400 font-mono text-sm">
                 &gt; CURRENT_FOCUS: {profile.currentFocus}
               </motion.div>
             )}
           </div>
 
-          <motion.div initial="hidden" animate="visible" variants={btnContainerVariant} className="flex flex-wrap items-center gap-4 pt-4">
+          <motion.div initial="hidden" animate={heroAnimate} variants={btnContainerVariant} className="flex flex-wrap items-center gap-4 pt-4">
             <motion.div variants={btnVariant}>
               <Link 
                 href="/projects"
@@ -214,7 +217,7 @@ export default function HomeClient({
               <motion.div 
                 variants={capItemVariant}
                 key={cap} 
-                className="font-mono text-xs uppercase bg-[#111315] text-[var(--color-terminal-green)] border border-neutral-800 px-4 py-2 tracking-wider transition-all hover:-translate-y-[1px] hover:border-[var(--color-terminal-green)] hover:text-white hover:bg-[var(--color-terminal-green)]/10 cursor-default"
+                className="font-mono text-xs uppercase bg-neutral-100 dark:bg-[#111315] text-[var(--color-terminal-green)] border border-neutral-300 dark:border-neutral-800 px-4 py-2 tracking-wider transition-all hover:-translate-y-[1px] hover:border-[var(--color-terminal-green)] hover:text-neutral-900 dark:hover:text-white hover:bg-[var(--color-terminal-green)]/10 cursor-default"
               >
                 [ {cap} ]
               </motion.div>
@@ -231,8 +234,7 @@ export default function HomeClient({
         />
       </div>
 
-        </div>
-      )}
+      </div>
     </>
   )
 }

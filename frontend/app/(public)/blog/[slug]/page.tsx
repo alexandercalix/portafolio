@@ -6,11 +6,33 @@ import { ArrowLeft, Calendar } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import ScrollReveal from "@/src/components/ScrollReveal"
+import AnalyticsTracker from "@/src/components/AnalyticsTracker"
 
 // Import highlight.js styles for code blocks
 import 'highlight.js/styles/atom-one-dark.css'
+import type { Metadata } from 'next'
 
 export const revalidate = 60
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
+  const post = await getBlogPostBySlug(resolvedParams.slug).catch(() => null)
+  
+  if (!post) return {}
+
+  const desc = post.excerpt || (post.content ? post.content.replace(/<[^>]*>?/gm, '').substring(0, 160) : post.title)
+
+  return {
+    title: `${post.title} | Blog | Oscar Calix`,
+    description: desc,
+    keywords: post.tags || [],
+    openGraph: {
+      title: post.title,
+      description: desc,
+      images: post.thumbnailUrl ? [{ url: post.thumbnailUrl }] : [],
+    }
+  }
+}
 
 export default async function BlogPostDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -23,6 +45,7 @@ export default async function BlogPostDetailPage({ params }: { params: Promise<{
 
   return (
     <article className="space-y-12 pb-24">
+      <AnalyticsTracker action="blog_post_viewed" category="Engagement" label={post.title} />
       {/* Header */}
       <ScrollReveal className="space-y-8">
         <Link href="/blog" className="inline-flex items-center gap-2 text-neutral-500 hover:text-[var(--color-terminal-green)] transition-colors font-mono text-xs">
